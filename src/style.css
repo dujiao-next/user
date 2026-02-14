@@ -294,6 +294,39 @@ body {
     color: var(--ui-accent);
   }
 
+  .theme-wordmark {
+    @apply inline-flex items-center rounded-xl border px-3.5 sm:px-4;
+    min-height: 2.5rem;
+    max-width: min(56vw, 20rem);
+    background-color: color-mix(in oklab, var(--ui-bg-elevated) 90%, var(--ui-accent-soft) 10%);
+    border-color: color-mix(in oklab, var(--ui-accent) 22%, var(--ui-border));
+    box-shadow: var(--ui-shadow-1);
+    color: var(--ui-text-primary);
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .theme-wordmark:hover {
+    color: var(--ui-accent-hover);
+    border-color: color-mix(in oklab, var(--ui-accent) 42%, transparent);
+    background-color: color-mix(in oklab, var(--ui-accent-soft) 72%, var(--ui-bg-elevated));
+  }
+
+  .theme-wordmark:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ui-focus-ring);
+  }
+
+  .theme-wordmark-text {
+    @apply block;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .theme-nav-link {
     @apply inline-flex items-center rounded-lg border border-transparent px-3 py-2 text-xs font-medium;
     color: var(--ui-text-muted);

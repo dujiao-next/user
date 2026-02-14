@@ -8,7 +8,7 @@
           <div class="flex items-center space-x-3">
             <div
               class="w-8 h-8 theme-btn-primary rounded-lg flex items-center justify-center">
-              <span class="text-white font-black text-sm">{{ brandLogoText }}</span>
+              <span class="text-white font-black text-sm">{{ brandInitial }}</span>
             </div>
             <h3 class="theme-text-primary text-xl font-bold tracking-tight">{{ brandSiteName }}</h3>
           </div>
@@ -107,14 +107,13 @@ const appStore = useAppStore()
 
 const config = computed(() => appStore.config)
 
-const brandLogoText = computed(() => {
-  const logoText = config.value?.brand?.logo_text
-  return typeof logoText === 'string' && logoText.trim() ? logoText.trim() : 'D&N'
-})
-
 const brandSiteName = computed(() => {
   const siteName = config.value?.brand?.site_name
   return typeof siteName === 'string' && siteName.trim() ? siteName.trim() : 'Dujiao-Next'
+})
+
+const brandInitial = computed(() => {
+  return brandSiteName.value.charAt(0).toUpperCase()
 })
 
 const quickLinks = [

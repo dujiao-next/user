@@ -3,15 +3,8 @@
     class="fixed top-0 left-0 right-0 z-50 theme-panel-soft border-b theme-border backdrop-blur-md transition-all duration-300">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <!-- Logo -->
-      <router-link to="/" class="flex items-center space-x-3 group relative">
-        <div
-          class="relative w-10 h-10 theme-btn-primary rounded-xl flex items-center justify-center transition-colors duration-300">
-          <span class="text-white font-black text-xl tracking-tighter">{{ brandLogoText }}</span>
-        </div>
-        <span
-          class="text-xl font-bold theme-text-primary tracking-wide hidden sm:block transition-colors">
-          {{ brandSiteName }}
-        </span>
+      <router-link to="/" class="theme-wordmark group relative" :title="brandSiteName">
+        <span class="theme-wordmark-text">{{ brandSiteName }}</span>
       </router-link>
 
       <!-- Desktop Menu -->
@@ -178,15 +171,11 @@ const currentLocale = computed(() => {
 
 const cartCount = computed(() => cartStore.totalItems)
 
-const brandLogoText = computed(() => {
-  const text = String(appStore.config?.brand?.logo_text || '').trim()
-  return text !== '' ? text : 'D&N'
-})
-
 const brandSiteName = computed(() => {
   const text = String(appStore.config?.brand?.site_name || '').trim()
   return text !== '' ? text : 'Dujiao-Next'
 })
+
 
 const toggleMobileMenu = () => {
   showMobileMenu.value = !showMobileMenu.value
