@@ -1,25 +1,25 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-white pt-24 pb-16">
+  <div class="min-h-screen theme-page pt-24 pb-16">
     <div class="container mx-auto px-4">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-black text-gray-900 dark:text-white mb-2">{{ t('payment.title') }}</h1>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">{{ t('payment.subtitle') }}</p>
+          <h1 class="text-3xl font-black theme-text-primary mb-2">{{ t('payment.title') }}</h1>
+          <p class="theme-text-secondary text-sm">{{ t('payment.subtitle') }}</p>
         </div>
         <router-link :to="backLink"
-          class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white text-sm transition-colors">{{
+          class="theme-link-muted text-sm">{{
             t('payment.backToOrders') }}</router-link>
       </div>
 
-      <div class="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur dark:border-white/10 dark:bg-[#111]/70">
+      <div class="mb-8 rounded-2xl border border-gray-200 theme-panel-soft p-4 backdrop-blur">
         <div class="grid grid-cols-3 gap-3">
           <div
             v-for="step in flowSteps"
             :key="step.key"
-            class="rounded-xl border px-3 py-2 text-center text-sm font-semibold transition-colors"
+            class="theme-step-chip"
             :class="step.active
-              ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-black'
-              : 'border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-black/20 dark:text-gray-400'"
+              ? 'theme-step-chip-active'
+              : 'theme-step-chip-inactive'"
           >
             {{ step.label }}
           </div>
@@ -27,19 +27,19 @@
       </div>
 
       <div v-if="loading"
-        class="h-40 bg-gray-200 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-pulse">
+        class="h-40 border theme-surface-muted rounded-2xl animate-pulse">
       </div>
 
       <div v-else-if="showGuestAuthForm"
-        class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
+        class="theme-panel rounded-2xl p-6">
         <h2 class="text-lg font-bold mb-2">{{ t('payment.guestAuthTitle') }}</h2>
-        <p class="text-xs text-gray-500 mb-4">{{ t('payment.guestAuthHint') }}</p>
+        <p class="text-xs theme-text-muted mb-4">{{ t('payment.guestAuthHint') }}</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input v-model="guestAuth.email" type="email"
-            class="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+            class="form-input-lg"
             :placeholder="t('guestOrders.emailPlaceholder')" />
           <input v-model="guestAuth.order_password" type="password"
-            class="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+            class="form-input-lg"
             :placeholder="t('guestOrders.passwordPlaceholder')" />
         </div>
         <div v-if="guestAuthError"
@@ -47,33 +47,33 @@
           {{ guestAuthError }}
         </div>
         <button @click="handleGuestAuthSubmit"
-          class="mt-4 px-4 py-2 rounded-lg bg-white text-black font-bold text-sm hover:bg-gray-200">
+          class="theme-btn-inline-md mt-4 border theme-btn-secondary font-semibold">
           {{ t('payment.guestAuthSubmit') }}
         </button>
       </div>
 
       <div v-else-if="!order"
-        class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-12 text-center">
-        <p class="text-gray-500 dark:text-gray-400">{{ t('payment.orderNotFound') }}</p>
+        class="theme-panel rounded-2xl p-12 text-center">
+        <p class="theme-text-muted">{{ t('payment.orderNotFound') }}</p>
       </div>
 
       <div v-else-if="showResultView" class="space-y-6">
-        <div class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
+        <div class="theme-panel rounded-2xl p-6">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ t('payment.resultTitle') }}</h2>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ t('payment.qrTip') }}</p>
-              <div class="mt-2 text-xs text-gray-500">
+              <h2 class="text-xl font-bold theme-text-primary">{{ t('payment.resultTitle') }}</h2>
+              <p class="text-sm theme-text-muted mt-1">{{ t('payment.qrTip') }}</p>
+              <div class="mt-2 text-xs theme-text-muted">
                 {{ t('payment.methodLabel') }}：{{ resultChannelName }}<span v-if="resultChannelType"> ({{ resultChannelType }})</span>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <button @click="handleRefresh" :disabled="loading"
-                class="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 hover:border-purple-500/40 disabled:opacity-60">
+                class="theme-btn-inline-md border theme-btn-secondary disabled:opacity-60">
                 {{ t('payment.refreshStatus') }}
               </button>
               <button @click="resetPayment"
-                class="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 hover:border-purple-500/40">
+                class="theme-btn-inline-md border theme-btn-secondary">
                 {{ t('payment.changeMethod') }}
               </button>
             </div>
@@ -82,15 +82,15 @@
           <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 space-y-4">
               <div v-if="showQRCode"
-                class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
-                <div class="text-sm text-gray-500 mb-4">{{ t('payment.qrTitle') }}</div>
+                class="theme-surface-soft border rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+                <div class="text-sm theme-text-muted mb-4">{{ t('payment.qrTitle') }}</div>
                 <img :src="qrImageUrl" alt="QR Code" class="w-56 h-56 object-contain" />
               </div>
 
-              <div v-else class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-                <div class="text-sm text-gray-500 mb-3">{{ t('payment.openPayLink') }}</div>
+              <div v-else class="theme-surface-soft border rounded-2xl p-6">
+                <div class="text-sm theme-text-muted mb-3">{{ t('payment.openPayLink') }}</div>
                 <a :href="paymentResult.pay_url" target="_blank"
-                  class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white text-black font-bold text-sm hover:bg-gray-200">
+                  class="theme-btn-inline-md border theme-btn-secondary font-semibold">
                   {{ t('payment.openPayLink') }}
                 </a>
                 <div v-if="openedPayWindow" class="mt-3 text-xs text-emerald-500">
@@ -98,46 +98,46 @@
                 </div>
                 <div class="mt-3 flex flex-wrap items-center gap-2">
                   <button @click="handleCopyPayLink"
-                    class="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 text-xs text-gray-600 dark:text-gray-300 hover:border-purple-500/40">
+                    class="px-3 py-1.5 rounded-lg border theme-btn-secondary text-xs">
                     {{ t('payment.copyPayLink') }}
                   </button>
                   <span v-if="copied" class="text-xs text-emerald-500">{{ t('payment.copied') }}</span>
                 </div>
-                <div class="mt-3 text-xs text-gray-500 break-all">
+                <div class="mt-3 text-xs theme-text-muted break-all">
                   {{ t('payment.payLinkLabel') }}：{{ paymentResult.pay_url }}
                 </div>
               </div>
             </div>
 
             <div class="space-y-4">
-              <div class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-2xl p-4">
-                <div class="text-xs text-gray-500">{{ t('payment.orderNo') }}</div>
-                <div class="text-sm font-semibold text-gray-900 dark:text-white mt-1">{{ order.order_no }}</div>
-                <div class="mt-3 text-xs text-gray-500">{{ t('payment.orderStatus') }}：{{ statusLabel(order.status) }}</div>
-                <div class="mt-2 text-xs text-gray-500">
+              <div class="theme-surface-soft border rounded-2xl p-4">
+                <div class="text-xs theme-text-muted">{{ t('payment.orderNo') }}</div>
+                <div class="text-sm font-semibold theme-text-primary mt-1">{{ order.order_no }}</div>
+                <div class="mt-3 text-xs theme-text-muted">{{ t('payment.orderStatus') }}：{{ statusLabel(order.status) }}</div>
+                <div class="mt-2 text-xs theme-text-muted">
                   {{ t('payment.methodLabel') }}：{{ resultChannelName }}<span v-if="resultChannelType"> ({{ resultChannelType }})</span>
                 </div>
               </div>
-              <div class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-2xl p-4">
-              <div class="text-xs text-gray-500">{{ t('orderDetail.amountTotal') }}</div>
-              <div class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ formatMoney(order.total_amount,
+              <div class="theme-surface-soft border rounded-2xl p-4">
+              <div class="text-xs theme-text-muted">{{ t('orderDetail.amountTotal') }}</div>
+              <div class="text-lg font-bold theme-text-primary mt-1">{{ formatMoney(order.total_amount,
                 order.currency) }}</div>
-              <div class="mt-2 text-xs text-gray-500">
+              <div class="mt-2 text-xs theme-text-muted">
                 {{ t('payment.feeRateLabel') }}：{{ feeRateDisplay }}
               </div>
-              <div class="mt-1 text-xs text-gray-500">
+              <div class="mt-1 text-xs theme-text-muted">
                 {{ t('payment.feeAmountLabel') }}：{{ feeAmountDisplay }}
               </div>
-              <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+              <div class="mt-1 text-sm font-semibold theme-text-primary">
                 {{ t('payment.payableAmountLabel') }}：{{ payableAmountDisplay }}
               </div>
-              <div v-if="showCountdown" class="mt-2 text-xs text-gray-500">
+              <div v-if="showCountdown" class="mt-2 text-xs theme-text-muted">
                 {{ t('payment.countdownLabel') }}：<span class="font-mono">{{ countdownText }}</span>
               </div>
-              <div v-if="pollingActive" class="mt-2 text-xs text-gray-500">{{ t('payment.pollingHint') }}</div>
+              <div v-if="pollingActive" class="mt-2 text-xs theme-text-muted">{{ t('payment.pollingHint') }}</div>
             </div>
               <div v-if="paymentResult.expires_at"
-                class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-2xl p-4 text-xs text-gray-500">
+                class="theme-surface-soft border rounded-2xl p-4 text-xs theme-text-muted">
                 {{ t('payment.expiresAt') }}：{{ formatDate(paymentResult.expires_at) }}
               </div>
             </div>
@@ -147,88 +147,88 @@
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">{{ t('payment.orderInfo') }}</h2>
+          <div class="theme-panel rounded-2xl p-6">
+            <h2 class="text-lg font-bold mb-4 theme-text-primary">{{ t('payment.orderInfo') }}</h2>
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <div class="text-xs uppercase tracking-wider text-gray-500">{{ t('payment.orderNo') }}</div>
-                <div class="text-sm font-semibold text-gray-900 dark:text-white mt-1">{{ order.order_no }}</div>
-              <div class="text-xs text-gray-500 mt-2">{{ t('orderDetail.createdAtLabel') }}：{{
+                <div class="text-xs uppercase tracking-wider theme-text-muted">{{ t('payment.orderNo') }}</div>
+                <div class="text-sm font-semibold theme-text-primary mt-1">{{ order.order_no }}</div>
+              <div class="text-xs theme-text-muted mt-2">{{ t('orderDetail.createdAtLabel') }}：{{
                   formatDate(order.created_at) }}</div>
             </div>
             <div class="flex flex-col items-start md:items-end gap-2">
-              <div class="text-xs uppercase tracking-wider text-gray-500">{{ t('orderDetail.amountTotal') }}</div>
-              <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatMoney(order.total_amount,
+              <div class="text-xs uppercase tracking-wider theme-text-muted">{{ t('orderDetail.amountTotal') }}</div>
+              <div class="text-lg font-bold theme-text-primary">{{ formatMoney(order.total_amount,
                 order.currency) }}</div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.feeRateLabel') }}：{{ feeRateDisplay }}</span>
-              <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.feeAmountLabel') }}：{{ feeAmountDisplay }}</span>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('payment.payableAmountLabel') }}：{{ payableAmountDisplay }}</span>
-              <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orderStatus') }}：{{
+              <span class="text-xs theme-text-muted">{{ t('payment.feeRateLabel') }}：{{ feeRateDisplay }}</span>
+              <span class="text-xs theme-text-muted">{{ t('payment.feeAmountLabel') }}：{{ feeAmountDisplay }}</span>
+              <span class="text-sm font-semibold theme-text-primary">{{ t('payment.payableAmountLabel') }}：{{ payableAmountDisplay }}</span>
+              <span class="text-xs theme-text-muted">{{ t('payment.orderStatus') }}：{{
                   statusLabel(order.status) }}</span>
             </div>
-          </div>
+            </div>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-              <div class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-xl p-3">
-                <div class="text-xs text-gray-500">{{ t('orderDetail.amountOriginal') }}</div>
-                <div class="text-gray-900 dark:text-white font-mono mt-1">{{ formatMoney(order.original_amount,
+              <div class="theme-surface-soft border rounded-xl p-3">
+                <div class="text-xs theme-text-muted">{{ t('orderDetail.amountOriginal') }}</div>
+                <div class="theme-text-primary font-mono mt-1">{{ formatMoney(order.original_amount,
                   order.currency) }}</div>
               </div>
-              <div class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-xl p-3">
-                <div class="text-xs text-gray-500">{{ t('orderDetail.amountDiscount') }}</div>
-                <div class="text-gray-900 dark:text-white font-mono mt-1">{{ formatMoney(order.discount_amount,
+              <div class="theme-surface-soft border rounded-xl p-3">
+                <div class="text-xs theme-text-muted">{{ t('orderDetail.amountDiscount') }}</div>
+                <div class="theme-text-primary font-mono mt-1">{{ formatMoney(order.discount_amount,
                   order.currency) }}</div>
               </div>
-              <div class="bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-xl p-3">
-                <div class="text-xs text-gray-500">{{ t('orderDetail.promotionDiscountLabel') }}</div>
-                <div class="text-gray-900 dark:text-white font-mono mt-1">{{ formatMoney(order.promotion_discount_amount,
+              <div class="theme-surface-soft border rounded-xl p-3">
+                <div class="text-xs theme-text-muted">{{ t('orderDetail.promotionDiscountLabel') }}</div>
+                <div class="theme-text-primary font-mono mt-1">{{ formatMoney(order.promotion_discount_amount,
                   order.currency) }}</div>
               </div>
             </div>
-            <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+            <div class="mt-3 text-sm theme-text-muted">
               <span v-if="order.expires_at">{{ t('payment.expiresAt') }}：{{ formatDate(order.expires_at) }}</span>
             </div>
             <div v-if="showCountdown"
-              class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border"
+              class="mt-3 theme-badge items-center gap-2 px-3 py-1.5 text-xs font-semibold"
               :class="countdownExpired
-                ? 'border-red-200 text-red-500 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10'
-                : 'border-emerald-200 text-emerald-600 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10'">
+                ? 'theme-badge-danger'
+                : 'theme-badge-success'">
               <span>{{ t('payment.countdownLabel') }}</span>
               <span class="font-mono">{{ countdownText }}</span>
             </div>
-            <div v-if="pollingActive" class="mt-3 text-xs text-gray-500">{{ t('payment.pollingHint') }}</div>
+            <div v-if="pollingActive" class="mt-3 text-xs theme-text-muted">{{ t('payment.pollingHint') }}</div>
           </div>
 
           <div v-if="orderItems.length"
-            class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">{{ t('payment.itemsTitle') }}</h2>
-            <div class="space-y-3 text-sm text-gray-500 dark:text-gray-300">
+            class="theme-panel rounded-2xl p-6">
+            <h2 class="text-lg font-bold mb-4 theme-text-primary">{{ t('payment.itemsTitle') }}</h2>
+            <div class="space-y-3 text-sm theme-text-muted">
               <div v-for="item in orderItems" :key="item.id"
                 class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-gray-100 dark:border-white/5 pb-3">
                 <div>
-                  <div class="text-gray-900 dark:text-white font-medium">{{ getLocalizedText(item.title) }}</div>
-                  <div class="text-xs text-gray-500 mt-1">
+                  <div class="theme-text-primary font-medium">{{ getLocalizedText(item.title) }}</div>
+                  <div class="text-xs theme-text-muted mt-1">
                     {{ t('orderDetail.quantityLabel') }}：{{ item.quantity }} · {{ t('orderDetail.itemFulfillmentLabel') }}：{{
                       fulfillmentTypeLabelText(item.fulfillment_type) }}
                   </div>
                 </div>
-                <div class="text-xs text-gray-500">
+                <div class="text-xs theme-text-muted">
                   {{ t('orderDetail.totalPriceLabel') }}：{{ formatMoney(item.total_price, order.currency) }}
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">{{ t('payment.channelTitle') }}</h2>
-            <div v-if="!configReady" class="text-sm text-gray-500">
+          <div class="theme-panel rounded-2xl p-6">
+            <h2 class="text-lg font-bold mb-4 theme-text-primary">{{ t('payment.channelTitle') }}</h2>
+            <div v-if="!configReady" class="text-sm theme-text-muted">
               {{ t('common.loading') }}
             </div>
-            <div v-else-if="channels.length === 0" class="text-sm text-gray-500">
+            <div v-else-if="channels.length === 0" class="text-sm theme-text-muted">
               {{ t('payment.channelEmpty') }}
             </div>
             <div v-else>
               <div v-if="cachedPayment"
-                class="mb-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl p-4 text-sm text-amber-700 dark:text-amber-200 space-y-2">
+                class="mb-4 rounded-xl border p-4 text-sm space-y-2 theme-alert-warning">
                 <div class="font-semibold">{{ t('payment.cachedTitle') }}</div>
                 <div>
                   {{ t('payment.cachedHint', {
@@ -238,10 +238,10 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                   <button @click="restoreCachedPayment"
-                    class="px-3 py-1.5 rounded-lg bg-white text-black font-bold text-xs hover:bg-gray-200">
+                    class="px-3 py-1.5 rounded-lg border theme-btn-secondary font-bold text-xs">
                     {{ t('payment.useCached') }}
                   </button>
-                  <span class="text-xs text-amber-700/80 dark:text-amber-200/80">
+                  <span class="text-xs opacity-80">
                     {{ t('payment.cachedCreateHint') }}
                   </span>
                 </div>
@@ -249,15 +249,15 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button v-for="channel in channels" :key="channel.id" @click="selectedChannelId = channel.id"
                   class="text-left border rounded-xl p-4 transition-colors"
-                  :class="selectedChannelId === channel.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-500/10' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/30'">
+                  :class="selectedChannelId === channel.id ? 'theme-selected-surface' : 'theme-interactive-surface'">
                   <div class="flex items-center justify-between gap-2">
-                    <div class="text-gray-900 dark:text-white font-medium">{{ channel.name }}</div>
+                    <div class="theme-text-primary font-medium">{{ channel.name }}</div>
                     <span v-if="selectedChannelId === channel.id"
-                      class="text-[11px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-200">
+                      class="theme-badge theme-badge-accent theme-badge-xs px-2 py-0.5">
                       {{ t('payment.selected') }}
                     </span>
                   </div>
-                  <div class="text-xs text-gray-500 mt-1">{{ providerTypeLabel(channel.provider_type) }} / {{
+                  <div class="text-xs theme-text-muted mt-1">{{ providerTypeLabel(channel.provider_type) }} / {{
                     channelTypeLabel(channel.channel_type) }}</div>
               </button>
               </div>
@@ -265,9 +265,9 @@
           </div>
 
           <div v-if="paymentResult"
-            class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">{{ t('payment.infoTitle') }}</h2>
-            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+            class="theme-panel rounded-2xl p-6">
+            <h2 class="text-lg font-bold mb-4 theme-text-primary">{{ t('payment.infoTitle') }}</h2>
+            <div class="text-sm theme-text-secondary space-y-2">
               <div>{{ t('payment.methodLabel') }}：{{ channelTypeLabel(paymentResult.channel_type) }} ({{
                 providerTypeLabel(paymentResult.provider_type) }})</div>
               <div>{{ t('payment.interactionLabel') }}：{{ interactionLabel }}</div>
@@ -277,15 +277,15 @@
 
             <div v-if="showQRCode" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div
-                class="bg-gray-50 dark:bg-black/30 border border-gray-100 dark:border-white/10 rounded-xl p-4 flex items-center justify-center">
+                class="theme-surface-soft border rounded-xl p-4 flex items-center justify-center">
                 <img :src="qrImageUrl" alt="QR Code" class="w-48 h-48 object-contain" />
               </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400 space-y-3">
-                <div class="text-gray-900 dark:text-white font-semibold">{{ t('payment.qrTitle') }}</div>
+              <div class="text-sm theme-text-secondary space-y-3">
+                <div class="theme-text-primary font-semibold">{{ t('payment.qrTitle') }}</div>
                 <div>{{ t('payment.qrTip') }}</div>
                 <div v-if="paymentResult.pay_url" class="pt-2 flex flex-wrap items-center gap-2">
                   <button @click="handleCopyPayLink"
-                    class="px-3 py-1.5 rounded-lg bg-white text-black font-bold text-xs hover:bg-gray-200">
+                    class="px-3 py-1.5 rounded-lg border theme-btn-secondary font-bold text-xs">
                     {{ t('payment.copyPayLink') }}
                   </button>
                   <span v-if="copied" class="text-xs text-emerald-500">{{ t('payment.copied') }}</span>
@@ -295,23 +295,23 @@
 
             <div v-if="showPayLink" class="mt-6 flex flex-col md:flex-row md:items-center gap-3">
               <a :href="paymentResult.pay_url" target="_blank"
-                class="px-4 py-2 rounded-lg bg-white text-black font-bold text-sm hover:bg-gray-200 text-center">
+                class="theme-btn-inline-md border theme-btn-secondary font-semibold text-center">
                 {{ t('payment.openPayLink') }}
               </a>
               <button @click="handleCopyPayLink"
-                class="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 hover:border-purple-500/40">
+                class="theme-btn-inline-md border theme-btn-secondary">
                 {{ t('payment.copyPayLink') }}
               </button>
-              <div class="text-xs text-gray-500 break-all">
+              <div class="text-xs theme-text-muted break-all">
                 {{ t('payment.payLinkLabel') }}：{{ paymentResult.pay_url }}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="h-fit rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-24 dark:border-white/10 dark:bg-[#111]/80">
-          <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">{{ t('payment.actionTitle') }}</h2>
-          <div v-if="showCountdown" class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <div class="h-fit rounded-2xl border theme-panel p-6 lg:sticky lg:top-24">
+          <h2 class="text-lg font-bold mb-4 theme-text-primary">{{ t('payment.actionTitle') }}</h2>
+          <div v-if="showCountdown" class="text-xs theme-text-muted mb-3">
             {{ t('payment.countdownLabel') }}：<span class="font-mono">{{ countdownText }}</span>
           </div>
           <div
@@ -324,24 +324,24 @@
 
           <div
             v-if="selectedChannel"
-            class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+            class="mb-4 rounded-lg border p-3 text-xs theme-alert-success"
           >
             <div class="font-semibold">{{ t('payment.methodLabel') }}：{{ selectedChannel.name }}</div>
             <div class="mt-1">{{ providerTypeLabel(selectedChannel.provider_type) }} / {{ channelTypeLabel(selectedChannel.channel_type) }}</div>
           </div>
           <div
             v-else-if="!orderExpired && !orderCanceled"
-            class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+            class="mb-4 rounded-lg border p-3 text-xs theme-alert-warning"
           >
             {{ t('payment.selectChannelError') }}
           </div>
 
           <button @click="handlePayment" :disabled="!canSubmitPayment"
-            class="w-full bg-gray-900 text-white dark:bg-white dark:text-black font-bold py-3 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:cursor-not-allowed disabled:opacity-50">
+            class="theme-btn-block-md theme-btn-primary font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50">
             {{ submitting ? t('payment.submitting') : t('payment.submitButton') }}
           </button>
           <button @click="handleRefresh" :disabled="loading"
-            class="mt-3 w-full border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 font-semibold py-2.5 rounded-xl hover:border-purple-500/40 transition-colors disabled:opacity-60">
+            class="theme-btn-block-md mt-3 border theme-btn-secondary font-semibold disabled:opacity-60">
             {{ t('payment.refreshStatus') }}
           </button>
         </div>

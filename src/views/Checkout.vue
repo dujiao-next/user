@@ -1,20 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white pt-24 pb-16">
+  <div class="min-h-screen theme-page pt-24 pb-16">
     <div class="container mx-auto px-4">
       <div class="mb-8">
-        <h1 class="mb-2 text-3xl font-black text-gray-900 dark:text-white">{{ t('checkout.title') }}</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400">{{ t('checkout.subtitle') }}</p>
+        <h1 class="mb-2 text-3xl font-black theme-text-primary">{{ t('checkout.title') }}</h1>
+        <p class="text-sm theme-text-secondary">{{ t('checkout.subtitle') }}</p>
       </div>
 
-      <div class="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur dark:border-white/10 dark:bg-[#111]/70">
+      <div class="mb-8 rounded-2xl border border-gray-200 theme-panel-soft p-4 backdrop-blur">
         <div class="grid grid-cols-3 gap-3">
           <div
             v-for="step in flowSteps"
             :key="step.key"
-            class="rounded-xl border px-3 py-2 text-center text-sm font-semibold transition-colors"
+            class="theme-step-chip"
             :class="step.active
-              ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-black'
-              : 'border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-black/20 dark:text-gray-400'"
+              ? 'theme-step-chip-active'
+              : 'theme-step-chip-inactive'"
           >
             {{ step.label }}
           </div>
@@ -23,12 +23,12 @@
 
       <div
         v-if="cartItems.length === 0"
-        class="rounded-2xl border border-gray-200 bg-white p-12 text-center dark:border-white/10 dark:bg-[#111]/80"
+        class="rounded-2xl border border-gray-200 bg-white p-12 text-center dark:border-white/10"
       >
-        <p class="mb-6 text-gray-500 dark:text-gray-400">{{ t('checkout.empty') }}</p>
+        <p class="mb-6 theme-text-muted">{{ t('checkout.empty') }}</p>
         <router-link
           to="/products"
-          class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+          class="theme-btn-inline-md theme-btn-primary gap-2 font-semibold transition-colors"
         >
           {{ t('checkout.emptyAction') }}
         </router-link>
@@ -36,8 +36,8 @@
 
       <div v-else class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
-          <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#111]/80">
-            <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('checkout.itemsTitle') }}</h2>
+          <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10">
+            <h2 class="mb-4 text-lg font-bold theme-text-primary">{{ t('checkout.itemsTitle') }}</h2>
             <div class="space-y-4">
               <div
                 v-for="item in cartItems"
@@ -48,25 +48,25 @@
                   <div>
                     <router-link
                       :to="`/products/${item.slug}`"
-                      class="font-semibold text-gray-900 transition-colors hover:text-purple-600 dark:text-white dark:hover:text-purple-400"
+                      class="font-semibold theme-link"
                     >
                       {{ getLocalizedText(item.title) }}
                     </router-link>
                     <div class="mt-1 text-xs text-gray-500">{{ t('checkout.quantityLabel') }}：{{ item.quantity }}</div>
                     <div class="mt-2 flex flex-wrap gap-2">
                       <span
-                        class="rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
+                        class="theme-badge text-xs uppercase tracking-wider"
                         :class="item.purchaseType === 'guest'
-                          ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                          : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'"
+                          ? 'theme-badge-warning'
+                          : 'theme-badge-success'"
                       >
                         {{ item.purchaseType === 'guest' ? t('productPurchase.guest') : t('productPurchase.member') }}
                       </span>
                       <span
-                        class="rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
+                        class="theme-badge text-xs uppercase tracking-wider"
                         :class="item.fulfillmentType === 'auto'
-                          ? 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300'
-                          : 'border-slate-500/30 bg-slate-500/10 text-slate-700 dark:text-slate-300'"
+                          ? 'theme-badge-info'
+                          : 'theme-badge-neutral'"
                       >
                         {{ item.fulfillmentType === 'auto' ? t('products.fulfillmentType.auto') : t('products.fulfillmentType.manual') }}
                       </span>
@@ -74,7 +74,7 @@
                   </div>
                   <div class="text-right">
                     <div class="text-xs uppercase tracking-wider text-gray-500">{{ t('checkout.previewTotal') }}</div>
-                    <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ itemSubtotal(item) }}</div>
+                    <div class="text-sm font-semibold theme-text-primary">{{ itemSubtotal(item) }}</div>
                   </div>
                 </div>
               </div>
@@ -83,17 +83,17 @@
 
           <div
             v-if="manualFormProducts.length"
-            class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#111]/80"
+            class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10"
           >
-            <h2 class="mb-2 text-lg font-bold text-gray-900 dark:text-white">{{ t('checkout.manualFormTitle') }}</h2>
-            <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">{{ t('checkout.manualFormTip') }}</p>
+            <h2 class="mb-2 text-lg font-bold theme-text-primary">{{ t('checkout.manualFormTitle') }}</h2>
+            <p class="mb-4 text-xs theme-text-muted">{{ t('checkout.manualFormTip') }}</p>
             <div class="space-y-5">
               <div
                 v-for="manualItem in manualFormProducts"
                 :key="manualItem.productId"
                 class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-white/10 dark:bg-black/20"
               >
-                <h3 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{{ getLocalizedText(manualItem.title) }}</h3>
+                <h3 class="mb-3 text-sm font-semibold theme-text-primary">{{ getLocalizedText(manualItem.title) }}</h3>
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div v-for="field in manualItem.fields" :key="`${manualItem.productId}-${field.key}`" class="space-y-1.5">
                     <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">
@@ -105,14 +105,14 @@
                       v-if="field.type === 'textarea'"
                       v-model="ensureManualFormRow(manualItem.productId)[field.key]"
                       rows="3"
-                      class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white dark:placeholder-gray-600"
+                      class="w-full form-input-compact"
                       :placeholder="getManualFieldPlaceholder(field)"
                     />
 
                     <select
                       v-else-if="field.type === 'select'"
                       v-model="ensureManualFormRow(manualItem.productId)[field.key]"
-                      class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white"
+                      class="w-full form-input-compact"
                     >
                       <option value="">{{ t('checkout.manualFormSelectPlaceholder') }}</option>
                       <option v-for="option in field.options" :key="option" :value="option">{{ option }}</option>
@@ -147,7 +147,7 @@
                       v-else
                       v-model="ensureManualFormRow(manualItem.productId)[field.key]"
                       :type="field.type === 'number' ? 'number' : field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'"
-                      class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white dark:placeholder-gray-600"
+                      class="w-full form-input-compact"
                       :placeholder="getManualFieldPlaceholder(field)"
                     />
 
@@ -163,34 +163,34 @@
             </div>
           </div>
 
-          <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#111]/80">
-            <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('checkout.couponTitle') }}</h2>
+          <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10">
+            <h2 class="mb-4 text-lg font-bold theme-text-primary">{{ t('checkout.couponTitle') }}</h2>
             <input
               v-model="couponCode"
               type="text"
-              class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white dark:placeholder-gray-600"
+              class="w-full form-input-lg"
               :placeholder="t('checkout.couponPlaceholder')"
             />
           </div>
 
           <div
             v-if="!userAuthStore.isAuthenticated"
-            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#111]/80"
+            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10"
           >
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('checkout.modeTitle') }}</h2>
+            <h2 class="text-lg font-bold theme-text-primary">{{ t('checkout.modeTitle') }}</h2>
             <div class="flex flex-wrap gap-3">
               <button
                 @click="checkoutMode = 'guest'"
-                class="rounded-lg border px-4 py-2 text-sm"
+                class="theme-btn-inline-md"
                 :class="checkoutMode === 'guest'
-                  ? 'border-purple-500 bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-white'
-                  : 'border-gray-200 text-gray-500 dark:border-white/10 dark:text-gray-400'"
+                  ? 'theme-btn-primary border border-transparent'
+                  : 'border theme-btn-secondary'"
               >
                 {{ t('checkout.guestPurchase') }}
               </button>
               <router-link
                 to="/auth/login"
-                class="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/30 dark:hover:text-white"
+                class="theme-btn-inline-md border theme-btn-secondary"
               >
                 {{ t('checkout.memberPurchase') }}
               </router-link>
@@ -200,19 +200,19 @@
               <input
                 v-model="guestEmail"
                 type="email"
-                class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white dark:placeholder-gray-600"
+                class="w-full form-input-lg"
                 :placeholder="t('checkout.guestEmailPlaceholder')"
               />
               <input
                 v-model="guestPassword"
                 type="password"
-                class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-colors focus:border-purple-500 focus:outline-none dark:border-white/10 dark:bg-black/40 dark:text-white dark:placeholder-gray-600"
+                class="w-full form-input-lg"
                 :placeholder="t('checkout.guestPasswordPlaceholder')"
               />
             </div>
 
             <div v-if="checkoutMode === 'guest' && guestCaptchaEnabled" class="space-y-2">
-              <p class="text-xs font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">{{ t('auth.common.captchaLabel') }}</p>
+              <p class="text-xs font-semibold uppercase tracking-[0.14em] theme-text-muted">{{ t('auth.common.captchaLabel') }}</p>
               <ImageCaptcha
                 v-if="captchaProvider === 'image'"
                 ref="guestImageCaptchaRef"
@@ -237,28 +237,28 @@
           </div>
         </div>
 
-        <div class="h-fit rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-24 dark:border-white/10 dark:bg-[#111]/80">
-          <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('checkout.submitTitle') }}</h2>
+        <div class="h-fit rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-24 dark:border-white/10">
+          <h2 class="mb-4 text-lg font-bold theme-text-primary">{{ t('checkout.submitTitle') }}</h2>
           <div class="mb-4 rounded-lg border border-gray-100 bg-gray-50 p-3 text-xs text-gray-500 dark:border-white/10 dark:bg-black/20 dark:text-gray-400">
             {{ t('checkout.submitHint') }}
           </div>
 
-          <div class="mb-4 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+          <div class="mb-4 space-y-3 text-sm theme-text-muted">
             <div class="flex items-center justify-between">
               <span>{{ t('cart.itemsCount') }}</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ totalItems }}</span>
+              <span class="font-mono theme-text-primary">{{ totalItems }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span>{{ t('checkout.previewOriginal') }}</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatPrice(previewOriginal, previewCurrency) }}</span>
+              <span class="font-mono theme-text-primary">{{ formatPrice(previewOriginal, previewCurrency) }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span>{{ t('checkout.previewCoupon') }}</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatPrice(previewCoupon, previewCurrency) }}</span>
+              <span class="font-mono theme-text-primary">{{ formatPrice(previewCoupon, previewCurrency) }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span>{{ t('checkout.previewPromotion') }}</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatPrice(previewPromotion, previewCurrency) }}</span>
+              <span class="font-mono theme-text-primary">{{ formatPrice(previewPromotion, previewCurrency) }}</span>
             </div>
             <div class="flex items-center justify-between border-t border-gray-100 pt-3 text-gray-900 dark:border-white/10 dark:text-white">
               <span class="font-semibold">{{ t('checkout.previewTotal') }}</span>
@@ -266,7 +266,7 @@
             </div>
           </div>
 
-          <div v-if="previewLoading || couponRefreshing" class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+          <div v-if="previewLoading || couponRefreshing" class="mb-3 text-xs theme-text-muted">
             {{ previewStatusText }}
           </div>
           <div
@@ -280,7 +280,7 @@
           <button
             @click="handleSubmit"
             :disabled="!canSubmit"
-            class="w-full rounded-xl bg-gray-900 py-3 font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            class="theme-btn-block-md theme-btn-primary font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ submitting ? t('checkout.submitting') : t('checkout.submitButton') }}
           </button>

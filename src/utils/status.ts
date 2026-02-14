@@ -18,19 +18,21 @@ export const orderStatusLabel = (t: TranslateFn, status?: string) => {
 export const orderStatusClass = (status?: string) => {
   switch (status) {
     case 'pending_payment':
-      return 'text-amber-700 border-amber-200 bg-amber-50'
+      return 'theme-badge-warning'
     case 'paid':
-      return 'text-emerald-700 border-emerald-200 bg-emerald-50'
+      return 'theme-badge-success'
     case 'partially_delivered':
-      return 'text-orange-700 border-orange-200 bg-orange-50'
+      return 'theme-badge-info'
+    case 'fulfilling':
+      return 'theme-badge-accent'
     case 'delivered':
     case 'completed':
-      return 'text-slate-800 border-slate-200 bg-slate-50'
+      return 'theme-badge-success'
     case 'expired':
-      return 'text-red-600 border-red-200 bg-red-50'
+      return 'theme-badge-danger'
     case 'canceled':
-      return 'text-slate-500 border-slate-200 bg-slate-50'
+      return 'theme-badge-neutral'
     default:
-      return 'text-slate-600 border-slate-200 bg-slate-50'
+      return 'theme-badge-neutral'
   }
 }

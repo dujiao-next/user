@@ -1,54 +1,54 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-white pt-24 pb-16">
+  <div class="min-h-screen theme-page pt-24 pb-16">
     <div class="container mx-auto px-4">
       <div class="mb-8">
-        <h1 class="text-3xl font-black text-gray-900 dark:text-white mb-2">{{ t('guestOrders.title') }}</h1>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">{{ t('guestOrders.subtitle') }}</p>
+        <h1 class="text-3xl font-black theme-text-primary mb-2">{{ t('guestOrders.title') }}</h1>
+        <p class="theme-text-muted text-sm">{{ t('guestOrders.subtitle') }}</p>
       </div>
 
-      <div class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6 mb-8">
+      <div class="theme-panel rounded-2xl p-6 mb-8">
         <div v-if="hasSavedAuth"
-          class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3">
+          class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs theme-text-muted theme-surface-soft border rounded-xl px-4 py-3">
           <span>{{ t('guestOrders.savedHint', { email: savedAuth.email || '-' }) }}</span>
           <button type="button" @click="clearSaved"
-            class="text-gray-500 hover:text-gray-900 dark:text-white/80 dark:hover:text-white text-xs underline decoration-gray-300 dark:decoration-white/20">
+            class="theme-link-muted text-xs underline decoration-gray-300 dark:decoration-white/20">
             {{ t('guestOrders.clearSaved') }}
           </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input v-model="email" type="email"
-            class="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+            class="form-input-lg"
             :placeholder="t('guestOrders.emailPlaceholder')" />
           <input v-model="orderPassword" type="password"
-            class="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+            class="form-input-lg"
             :placeholder="t('guestOrders.passwordPlaceholder')" />
           <input v-model="orderNo" type="text"
-            class="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+            class="form-input-lg"
             :placeholder="t('guestOrders.orderNoPlaceholder')" />
           <button @click="handleSearch" :disabled="loading"
-            class="bg-gray-900 text-white dark:bg-white dark:text-black rounded-xl font-bold px-6 py-3 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50">
+            class="theme-btn-primary rounded-xl font-bold px-6 py-3 transition-colors disabled:opacity-50">
             {{ loading ? t('guestOrders.searching') : t('guestOrders.search') }}
           </button>
         </div>
-        <p class="text-xs text-gray-500 mt-3">{{ t('guestOrders.tip') }}</p>
+        <p class="text-xs theme-text-muted mt-3">{{ t('guestOrders.tip') }}</p>
         <div v-if="error" class="text-red-400 text-sm mt-4 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
           {{ error }}
         </div>
       </div>
 
       <div v-if="orders.length === 0 && !loading"
-        class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-12 text-center">
-        <p class="text-gray-500 dark:text-gray-400">{{ emptyMessage }}</p>
+        class="theme-panel rounded-2xl p-12 text-center">
+        <p class="theme-text-muted">{{ emptyMessage }}</p>
       </div>
 
       <div v-else class="space-y-4">
         <div v-for="order in orders" :key="order.order_no || order.id"
-          class="bg-white dark:bg-[#111]/80 border border-gray-200 dark:border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          class="theme-panel rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <div class="text-xs uppercase tracking-wider text-gray-500">{{ t('orders.orderNo') }}：{{ order.order_no }}</div>
-            <div class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ formatMoney(order.total_amount,
+            <div class="text-xs uppercase tracking-wider theme-text-muted">{{ t('orders.orderNo') }}：{{ order.order_no }}</div>
+            <div class="text-lg font-bold theme-text-primary mt-1">{{ formatMoney(order.total_amount,
               order.currency) }}</div>
-            <div v-if="hasDiscount(order)" class="text-xs text-gray-500 mt-1">
+            <div v-if="hasDiscount(order)" class="text-xs theme-text-muted mt-1">
               <span v-if="hasDiscountAmount(order.discount_amount)">
                 {{ t('orderDetail.couponDiscountLabel') }}：{{ formatMoney(order.discount_amount, order.currency) }}
               </span>
@@ -57,18 +57,18 @@
                   order.currency) }}
               </span>
             </div>
-            <div class="text-xs text-gray-500 mt-1">{{ formatDate(order.created_at) }}</div>
+            <div class="text-xs theme-text-muted mt-1">{{ formatDate(order.created_at) }}</div>
           </div>
           <div class="flex items-center gap-3">
-            <span class="px-3 py-1 rounded-full text-xs font-medium border" :class="statusClass(order.status)">
+            <span class="theme-badge px-3 py-1 text-xs font-medium" :class="statusClass(order.status)">
               {{ statusLabel(order.status) }}
             </span>
             <router-link :to="`/guest/orders/${order.order_no}`"
-              class="px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-purple-500/40 text-sm text-gray-600 dark:text-gray-300">
+              class="px-4 py-2 rounded-lg border theme-btn-secondary text-sm">
               {{ t('guestOrders.viewDetails') }}
             </router-link>
             <router-link v-if="order.status === 'pending_payment'" :to="`/pay?guest=1&order_no=${order.order_no}`"
-              class="px-4 py-2 rounded-lg bg-gray-900 text-white dark:bg-white dark:text-black font-bold text-sm hover:bg-gray-800 dark:hover:bg-gray-200">
+              class="px-4 py-2 rounded-lg theme-btn-primary font-bold text-sm">
               {{ t('guestOrders.payNow') }}
             </router-link>
           </div>
@@ -77,15 +77,15 @@
 
       <div v-if="pagination.total_page > 1" class="flex items-center justify-center gap-4 mt-10">
         <button @click="changePage(pagination.page - 1)" :disabled="pagination.page <= 1"
-          class="px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 disabled:opacity-40">
+          class="px-4 py-2 rounded-lg border theme-btn-secondary text-sm disabled:opacity-40">
           {{ t('guestOrders.prevPage') }}
         </button>
-        <span class="text-sm text-gray-500">{{ t('guestOrders.pageInfo', {
+        <span class="text-sm theme-text-muted">{{ t('guestOrders.pageInfo', {
           page: pagination.page, total:
             pagination.total_page
         }) }}</span>
         <button @click="changePage(pagination.page + 1)" :disabled="pagination.page >= pagination.total_page"
-          class="px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 disabled:opacity-40">
+          class="px-4 py-2 rounded-lg border theme-btn-secondary text-sm disabled:opacity-40">
           {{ t('guestOrders.nextPage') }}
         </button>
       </div>

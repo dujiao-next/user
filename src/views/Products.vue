@@ -1,25 +1,12 @@
 <template>
   <div
-    class="products-page min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-white pt-20 pb-16 relative overflow-hidden">
-    <!-- Animated Background -->
-    <div class="fixed inset-0 z-0 pointer-events-none">
-      <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay">
-      </div>
-      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/20 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-900/20 blur-[120px] rounded-full"></div>
-    </div>
-
-    <div class="container mx-auto px-4 relative z-10">
+    class="products-page min-h-screen theme-page pt-20 pb-16">
+    <div class="container mx-auto px-4">
       <!-- Page Header -->
       <div class="mb-12 mt-12 text-center">
-        <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">
-          <span
-            class="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
-            {{ t('nav.products') }}
-          </span>
-        </h1>
+        <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight theme-text-primary">{{ t('nav.products') }}</h1>
         <p
-          class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg border-b border-gray-200 dark:border-white/5 pb-8">
+          class="theme-text-secondary max-w-2xl mx-auto text-lg border-b theme-border pb-8">
           {{ t('products.subtitle') }}
         </p>
       </div>
@@ -28,23 +15,23 @@
         <!-- Sidebar - Categories -->
         <aside class="lg:w-64 flex-shrink-0">
           <div
-            class="bg-white dark:bg-[#111]/80 backdrop-blur-xl border border-gray-200 dark:border-white/5 rounded-2xl p-6 sticky top-24">
+            class="theme-panel backdrop-blur-xl border rounded-2xl p-6 sticky top-24">
             <div class="mb-6">
-              <label class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <label class="text-xs font-semibold uppercase tracking-wider theme-text-muted">
                 {{ t('products.searchLabel') }}
               </label>
               <div class="mt-3 flex items-center gap-2">
                 <input v-model="searchQuery" type="text"
-                  class="min-w-0 flex-1 bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors"
+                  class="min-w-0 flex-1 form-input"
                   :placeholder="t('products.searchPlaceholder')" />
                 <button v-if="searchQuery" type="button" @click="clearSearch"
-                  class="shrink-0 whitespace-nowrap px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 text-xs text-gray-600 dark:text-gray-300 hover:border-purple-500/40 transition-colors">
+                  class="shrink-0 whitespace-nowrap px-3 py-2.5 rounded-xl border theme-btn-secondary text-xs">
                   {{ t('common.cancel') }}
                 </button>
               </div>
             </div>
-            <h2 class="text-lg font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
-              <span class="w-1 h-5 bg-purple-500 rounded-full"></span>
+            <h2 class="text-lg font-bold mb-6 theme-text-primary flex items-center gap-2">
+              <span class="w-1 h-5 theme-accent-stick rounded-full"></span>
               {{ t('products.categories') }}
             </h2>
             <ul class="space-y-2">
@@ -52,8 +39,8 @@
                 <button @click="selectedCategory = null"
                   class="w-full text-left px-4 py-3 rounded-xl transition-all duration-300 border"
                   :class="selectedCategory === null
-                    ? 'bg-purple-600 border-purple-500 text-white shadow-[0_0_20px_-5px_rgba(147,51,234,0.5)]'
-                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'">
+                    ? 'theme-btn-primary border border-transparent'
+                    : 'border-transparent theme-text-secondary hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'">
                   {{ t('products.allCategories') }}
                 </button>
               </li>
@@ -61,8 +48,8 @@
                 <button @click="selectedCategory = category.id"
                   class="w-full text-left px-4 py-3 rounded-xl transition-all duration-300 border"
                   :class="selectedCategory === category.id
-                    ? 'bg-purple-600 border-purple-500 text-white shadow-[0_0_20px_-5px_rgba(147,51,234,0.5)]'
-                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'">
+                    ? 'theme-btn-primary border border-transparent'
+                    : 'border-transparent theme-text-secondary hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'">
                   {{ getLocalizedText(category.name) }}
                 </button>
               </li>
@@ -75,7 +62,7 @@
           <!-- Loading State -->
           <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="i in 6" :key="i"
-              class="bg-gray-200 dark:bg-gray-800/50 rounded-2xl h-[400px] animate-pulse border border-gray-200 dark:border-white/5">
+              class="theme-surface-muted rounded-2xl h-[400px] animate-pulse border">
             </div>
           </div>
 
@@ -83,21 +70,21 @@
           <div v-else-if="products.length > 0">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div v-for="product in products" :key="product.id"
-                class="group relative bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-white/5 transition-all duration-500 overflow-hidden flex flex-col h-full"
+                class="group relative theme-panel rounded-2xl border transition-all duration-500 overflow-hidden flex flex-col h-full"
                 :class="isSoldOut(product)
                   ? 'opacity-85 grayscale-[0.25] saturate-50 border-rose-300/60 dark:border-rose-900/40 hover:-translate-y-0 hover:shadow-none hover:border-rose-300/60 dark:hover:border-rose-900/40'
-                  : 'hover:border-purple-500/30 hover:-translate-y-2 hover:shadow-[0_20px_40px_-20px_rgba(168,85,247,0.15)]'"
+                  : 'theme-card-interactive'"
                 @click="goToProduct(product.slug)">
                 <!-- Image Area -->
-                <div class="h-56 overflow-hidden bg-gray-100 dark:bg-gray-900 relative shrink-0">
+                <div class="h-56 overflow-hidden theme-surface-muted relative shrink-0">
                   <div
-                    class="absolute inset-0 bg-gradient-to-t from-white dark:from-[#111] to-transparent z-10 opacity-60">
+                    class="absolute inset-0 bg-black/15 z-10">
                   </div>
                   <img v-if="product.images && getFirstImageUrl(product.images)" :src="getFirstImageUrl(product.images)"
                     :alt="getLocalizedText(product.title)"
                     class="w-full h-full object-cover transform transition-transform duration-700 ease-out"
                     :class="isSoldOut(product) ? 'grayscale brightness-75' : 'group-hover:scale-110'" />
-                  <div v-else class="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-700">
+                  <div v-else class="w-full h-full flex items-center justify-center theme-text-muted">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -106,7 +93,7 @@
 
                   <div v-if="isSoldOut(product)" class="absolute inset-0 z-20 bg-black/45"></div>
                   <div v-if="isSoldOut(product)"
-                    class="absolute left-4 top-4 z-30 inline-flex items-center rounded-full border border-rose-300/70 bg-rose-600 px-3 py-1 text-xs font-bold tracking-wider text-white shadow-lg">
+                    class="absolute left-4 top-4 z-30 theme-badge theme-badge-solid-danger text-xs font-bold tracking-wider shadow-sm">
                     {{ t('products.stockStatus.outOfStock') }}
                   </div>
 
@@ -114,7 +101,7 @@
                   <div v-if="!isSoldOut(product) && product.tags && product.tags.length > 0"
                     class="absolute top-4 right-4 z-20 flex flex-wrap gap-2 justify-end">
                     <span v-for="(tag, index) in product.tags.slice(0, 2)" :key="index"
-                      class="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-xs font-medium text-white">
+                      class="theme-badge theme-badge-inverse px-3 py-1 text-xs font-medium">
                       {{ tag }}
                     </span>
                   </div>
@@ -122,20 +109,20 @@
 
                 <!-- Content Area -->
                 <div class="p-5 relative z-20 flex flex-col flex-1">
-                  <div v-if="product.category?.name" class="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                  <div v-if="product.category?.name" class="text-xs theme-text-muted uppercase tracking-wider mb-2">
                     {{ t('products.categoryLabel') }} · {{ getLocalizedText(product.category.name) }}
                   </div>
                   <h3
-                    class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1">
+                    class="text-lg font-bold theme-text-primary mb-2 transition-colors line-clamp-1">
                     {{ getLocalizedText(product.title) }}
                   </h3>
 
                   <div class="mb-3 flex flex-wrap items-center gap-2">
                     <span
-                      class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+                      class="theme-badge"
                       :class="product.purchase_type === 'guest'
-                        ? 'border-amber-500/40 bg-amber-500/12 text-amber-700 dark:text-amber-300'
-                        : 'border-emerald-500/40 bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'"
+                        ? 'theme-badge-warning'
+                        : 'theme-badge-success'"
                     >
                       <svg v-if="product.purchase_type === 'guest'" class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" />
@@ -150,10 +137,10 @@
                     </span>
 
                     <span
-                      class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+                      class="theme-badge"
                       :class="product.fulfillment_type === 'auto'
-                        ? 'border-sky-500/40 bg-sky-500/12 text-sky-700 dark:text-sky-300'
-                        : 'border-slate-500/40 bg-slate-500/12 text-slate-700 dark:text-slate-300'"
+                        ? 'theme-badge-info'
+                        : 'theme-badge-neutral'"
                     >
                       <svg v-if="product.fulfillment_type === 'auto'" class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
@@ -165,31 +152,31 @@
                     </span>
 
                     <span
-                      class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+                      class="theme-badge"
                       :class="getStockBadgeClass(product.stock_status)"
                     >
                       {{ getStockStatusLabel(product) }}
                     </span>
                   </div>
 
-                  <p class="text-gray-600 dark:text-gray-400 text-sm mb-6 line-clamp-2">
+                  <p class="theme-text-secondary text-sm mb-6 line-clamp-2">
                     {{ getLocalizedText(product.description) }}
                   </p>
 
                   <div
-                    class="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-4 mt-auto">
+                    class="flex items-center justify-between border-t theme-border pt-4 mt-auto">
                     <div class="flex flex-col">
-                      <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('products.price', 'Price')
+                      <span class="text-xs theme-text-muted uppercase tracking-wider">{{ t('products.price', 'Price')
                       }}</span>
                       <span v-if="hasPromotionPrice(product)" class="text-lg font-bold text-rose-600 dark:text-rose-300 font-mono">
                         {{ formatPrice(getPromotionPriceAmount(product), product.price_currency) }}
                       </span>
-                      <span v-else class="text-lg font-bold text-gray-900 dark:text-white font-mono">
+                      <span v-else class="text-lg font-bold theme-text-primary font-mono">
                         {{ formatPrice(product.price_amount, product.price_currency) }}
                       </span>
                       <div v-if="hasPromotionPrice(product)" class="mt-0.5 flex flex-wrap items-center gap-1.5">
-                        <span class="text-xs text-gray-400 line-through">{{ formatPrice(product.price_amount, product.price_currency) }}</span>
-                        <span class="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:text-rose-300">
+                        <span class="text-xs theme-text-muted opacity-80 line-through">{{ formatPrice(product.price_amount, product.price_currency) }}</span>
+                        <span class="theme-badge theme-badge-danger theme-badge-xs">
                           {{ t('products.promotionTag') }}
                         </span>
                       </div>
@@ -215,22 +202,22 @@
             <!-- Pagination -->
             <div v-if="totalPages > 1" class="mt-12 flex justify-center">
               <nav
-                class="flex items-center space-x-2 bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-2 rounded-2xl border border-gray-200 dark:border-white/5">
+                class="flex items-center space-x-2 theme-panel-soft backdrop-blur-md p-2 rounded-2xl border">
                 <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-                  class="w-10 h-10 flex items-center justify-center rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 text-gray-900 dark:text-white">
+                  class="w-10 h-10 flex items-center justify-center rounded-xl border theme-btn-secondary transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
-                <span class="px-4 py-2 font-mono text-gray-500 dark:text-gray-400">
-                  <span class="text-gray-900 dark:text-white font-bold">{{ currentPage }}</span>
+                <span class="px-4 py-2 font-mono theme-text-muted">
+                  <span class="theme-text-primary font-bold">{{ currentPage }}</span>
                   <span class="mx-2 opacity-50">/</span>
                   <span>{{ totalPages }}</span>
                 </span>
 
                 <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-                  class="w-10 h-10 flex items-center justify-center rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 text-gray-900 dark:text-white">
+                  class="w-10 h-10 flex items-center justify-center rounded-xl border theme-btn-secondary transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -241,13 +228,13 @@
 
           <!-- Empty State -->
           <div v-else
-            class="text-center py-20 border border-gray-200 dark:border-white/5 rounded-2xl bg-white/50 dark:bg-[#111]/50 backdrop-blur-sm">
-            <svg class="w-20 h-20 mx-auto text-gray-400 dark:text-gray-600 mb-6" fill="none" stroke="currentColor"
+            class="text-center py-20 border theme-panel-soft rounded-2xl backdrop-blur-sm">
+            <svg class="w-20 h-20 mx-auto theme-text-muted mb-6" fill="none" stroke="currentColor"
               viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
-            <p class="text-gray-500 dark:text-gray-400 text-lg">
+            <p class="theme-text-muted text-lg">
               {{ t('products.empty') }}
             </p>
           </div>
@@ -297,13 +284,13 @@ const getFulfillmentTypeLabel = (fulfillmentType: string) => {
 const getStockBadgeClass = (status: string) => {
   switch (status) {
     case 'unlimited':
-      return 'border-violet-500/40 bg-violet-500/12 text-violet-700 dark:text-violet-300'
+      return 'theme-badge-info'
     case 'low_stock':
-      return 'border-orange-500/40 bg-orange-500/12 text-orange-700 dark:text-orange-300'
+      return 'theme-badge-warning'
     case 'out_of_stock':
-      return 'border-rose-500/40 bg-rose-500/12 text-rose-700 dark:text-rose-300'
+      return 'theme-badge-danger'
     default:
-      return 'border-emerald-500/40 bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+      return 'theme-badge-success'
   }
 }
 

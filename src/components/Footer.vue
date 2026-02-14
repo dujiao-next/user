@@ -1,26 +1,18 @@
 <template>
   <footer
-    class="relative bg-white dark:bg-[#050505] text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-white/5 overflow-hidden">
-    <!-- Background Decor -->
-    <div
-      class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500/10 dark:bg-purple-900/10 blur-[120px] rounded-full pointer-events-none">
-    </div>
-    <div
-      class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-900/10 blur-[120px] rounded-full pointer-events-none">
-    </div>
-
+    class="relative theme-panel-strong theme-text-secondary border-t theme-border overflow-hidden">
     <div class="container mx-auto px-4 py-16 relative z-10">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         <!-- Brand -->
         <div class="md:col-span-2 space-y-6">
           <div class="flex items-center space-x-3">
             <div
-              class="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              class="w-8 h-8 theme-btn-primary rounded-lg flex items-center justify-center">
               <span class="text-white font-black text-sm">{{ brandLogoText }}</span>
             </div>
-            <h3 class="text-gray-900 dark:text-white text-xl font-bold tracking-tight">{{ brandSiteName }}</h3>
+            <h3 class="theme-text-primary text-xl font-bold tracking-tight">{{ brandSiteName }}</h3>
           </div>
-          <p class="text-sm leading-relaxed max-w-sm text-gray-500">
+          <p class="text-sm leading-relaxed max-w-sm theme-text-muted">
             {{ t('footer.description') }}
           </p>
           <div class="flex space-x-4">
@@ -38,12 +30,12 @@
 
         <!-- Links -->
         <div>
-          <h4 class="text-gray-900 dark:text-white font-bold mb-6 tracking-wide">{{ t('footer.quickLinks') }}</h4>
+          <h4 class="theme-text-primary font-bold mb-6 tracking-wide">{{ t('footer.quickLinks') }}</h4>
           <ul class="space-y-3 text-sm">
             <li v-for="item in quickLinks" :key="item.path">
-              <router-link :to="item.path" class="hover:text-purple-400 transition-colors flex items-center group">
+              <router-link :to="item.path" class="theme-link-muted transition-colors flex items-center group">
                 <span
-                  class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-700 rounded-full mr-2 group-hover:bg-purple-500 transition-colors"></span>
+                  class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-700 rounded-full mr-2 transition-colors"></span>
                 {{ t(item.label) }}
               </router-link>
             </li>
@@ -52,7 +44,7 @@
 
         <!-- Contact -->
         <div>
-          <h4 class="text-gray-900 dark:text-white font-bold mb-6 tracking-wide">{{ t('footer.contact') }}</h4>
+          <h4 class="theme-text-primary font-bold mb-6 tracking-wide">{{ t('footer.contact') }}</h4>
           <div class="space-y-4">
             <a v-if="config?.contact?.telegram" :href="config.contact.telegram" target="_blank"
               rel="noopener noreferrer"
@@ -78,7 +70,7 @@
 
       <!-- Copyright -->
       <div
-        class="border-t border-gray-100 dark:border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-600">
+        class="border-t theme-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs theme-text-muted">
         <div class="space-y-1 text-center md:text-left">
           <p>&copy; {{ currentYear }} {{ brandSiteName }}. {{ t('footer.rights') }}</p>
           <p class="flex items-center justify-center gap-1 md:justify-start">

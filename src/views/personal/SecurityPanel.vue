@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-6">
-    <div class="rounded-2xl border border-gray-200/80 bg-white/95 p-6 shadow-sm dark:border-white/10 dark:bg-[#111]/85">
+    <div class="theme-personal-card">
       <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ t('personalCenter.security.title') }}</h2>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('personalCenter.security.subtitle') }}</p>
+          <h2 class="text-xl font-bold theme-text-primary">{{ t('personalCenter.security.title') }}</h2>
+          <p class="mt-1 text-sm theme-text-muted">{{ t('personalCenter.security.subtitle') }}</p>
         </div>
-        <span class="inline-flex w-fit items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-200">
+        <span class="theme-badge theme-badge-accent px-3 py-1 text-xs font-semibold">
           {{ t('personalCenter.tabs.security') }}
         </span>
       </div>
@@ -15,7 +15,7 @@
         {{ securityAlert.message }}
       </div>
 
-      <form class="space-y-5" @submit.prevent="handleChangeEmail">
+      <form class="space-y-6" @submit.prevent="handleChangeEmail">
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ t('personalCenter.security.currentEmailLabel') }}</label>
           <input
@@ -31,7 +31,7 @@
             v-model="securityForm.newEmail"
             type="email"
             :placeholder="t('personalCenter.security.newEmailPlaceholder')"
-            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+            class="w-full form-input-lg"
           />
         </div>
 
@@ -42,13 +42,13 @@
               <input
                 v-model="securityForm.oldCode"
                 :placeholder="t('personalCenter.security.codePlaceholder')"
-                class="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+                class="min-w-0 flex-1 form-input-lg"
               />
               <button
                 type="button"
                 @click="handleSendOldCode"
                 :disabled="userProfileStore.sendingCode || oldCodeCooldown > 0"
-                class="whitespace-nowrap rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-600 transition-colors hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-200"
+                class="whitespace-nowrap rounded-xl border theme-btn-secondary px-4 py-3 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {{ oldCodeCooldown > 0 ? t('personalCenter.security.countdown', { seconds: oldCodeCooldown }) : t('personalCenter.security.sendOldCode') }}
               </button>
@@ -61,13 +61,13 @@
               <input
                 v-model="securityForm.newCode"
                 :placeholder="t('personalCenter.security.codePlaceholder')"
-                class="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+                class="min-w-0 flex-1 form-input-lg"
               />
               <button
                 type="button"
                 @click="handleSendNewCode"
                 :disabled="userProfileStore.sendingCode || newCodeCooldown > 0"
-                class="whitespace-nowrap rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-600 transition-colors hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-200"
+                class="whitespace-nowrap rounded-xl border theme-btn-secondary px-4 py-3 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {{ newCodeCooldown > 0 ? t('personalCenter.security.countdown', { seconds: newCodeCooldown }) : t('personalCenter.security.sendNewCode') }}
               </button>
@@ -79,7 +79,7 @@
           <button
             type="submit"
             :disabled="userProfileStore.changingEmail"
-            class="inline-flex items-center justify-center rounded-xl bg-gray-900 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            class="inline-flex items-center justify-center rounded-xl theme-btn-primary px-6 py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           >
             {{ userProfileStore.changingEmail ? t('personalCenter.security.submitting') : t('personalCenter.security.submit') }}
           </button>
@@ -87,10 +87,10 @@
       </form>
     </div>
 
-    <div class="rounded-2xl border border-gray-200/80 bg-white/95 p-6 shadow-sm dark:border-white/10 dark:bg-[#111]/85">
+    <div class="theme-personal-card">
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('personalCenter.security.loginLogsTitle') }}</h3>
-        <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('personalCenter.security.loginLogsTip') }}</span>
+        <h3 class="text-lg font-bold theme-text-primary">{{ t('personalCenter.security.loginLogsTitle') }}</h3>
+        <span class="text-xs theme-text-muted">{{ t('personalCenter.security.loginLogsTip') }}</span>
       </div>
       <div v-if="userProfileStore.loadingLoginLogs" class="rounded-xl border border-gray-200/70 px-4 py-6 text-center text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
         {{ t('personalCenter.security.loginLogsLoading') }}
@@ -112,30 +112,30 @@
             <tr v-for="item in userProfileStore.recentLoginLogs" :key="item.id">
               <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ formatDate(item.created_at) }}</td>
               <td class="px-4 py-3">
-                <span class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold" :class="loginStatusClass(item.status)">
+                <span class="theme-badge px-2.5 py-1 text-xs font-semibold" :class="loginStatusClass(item.status)">
                   {{ loginStatusLabel(item.status) }}
                 </span>
               </td>
               <td class="px-4 py-3 font-mono text-xs text-gray-600 dark:text-gray-300">{{ item.client_ip || '-' }}</td>
-              <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{{ loginReasonLabel(item.fail_reason) }}</td>
+              <td class="px-4 py-3 text-xs theme-text-muted">{{ loginReasonLabel(item.fail_reason) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-gray-200/80 bg-white/95 p-6 shadow-sm dark:border-white/10 dark:bg-[#111]/85">
-      <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('personalCenter.security.passwordTitle') }}</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('personalCenter.security.passwordSubtitle') }}</p>
+    <div class="theme-personal-card">
+      <h3 class="text-lg font-bold theme-text-primary">{{ t('personalCenter.security.passwordTitle') }}</h3>
+      <p class="mt-1 text-sm theme-text-muted">{{ t('personalCenter.security.passwordSubtitle') }}</p>
 
-      <form class="mt-6 space-y-5" @submit.prevent="handleChangePassword">
+      <form class="mt-6 space-y-6" @submit.prevent="handleChangePassword">
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ t('personalCenter.security.currentPasswordLabel') }}</label>
           <input
             v-model="passwordForm.oldPassword"
             type="password"
             :placeholder="t('personalCenter.security.passwordPlaceholder')"
-            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+            class="w-full form-input-lg"
           />
         </div>
 
@@ -146,7 +146,7 @@
               v-model="passwordForm.newPassword"
               type="password"
               :placeholder="t('personalCenter.security.passwordPlaceholder')"
-              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+              class="w-full form-input-lg"
             />
           </div>
 
@@ -156,7 +156,7 @@
               v-model="passwordForm.confirmPassword"
               type="password"
               :placeholder="t('personalCenter.security.passwordPlaceholder')"
-              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-black/20 dark:text-gray-100 dark:focus:border-indigo-500/40"
+              class="w-full form-input-lg"
             />
           </div>
         </div>
@@ -165,7 +165,7 @@
           <button
             type="submit"
             :disabled="userProfileStore.changingPassword"
-            class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:bg-black/10 dark:text-gray-200 dark:hover:border-indigo-500/40 dark:hover:text-indigo-200"
+            class="inline-flex items-center justify-center rounded-xl border theme-btn-secondary px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
           >
             {{ userProfileStore.changingPassword ? t('personalCenter.security.changePasswordSubmitting') : t('personalCenter.security.changePassword') }}
           </button>
@@ -354,9 +354,9 @@ const loginStatusLabel = (status?: string) => {
 
 const loginStatusClass = (status?: string) => {
   if ((status || '').trim() === 'success') {
-    return 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300'
+    return 'theme-badge-success'
   }
-  return 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300'
+  return 'theme-badge-danger'
 }
 
 const loginReasonLabel = (reason?: string) => {

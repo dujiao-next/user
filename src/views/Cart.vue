@@ -1,20 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white pt-24 pb-16">
+  <div class="min-h-screen theme-page pt-24 pb-16">
     <div class="container mx-auto px-4">
       <div class="mb-8">
-        <h1 class="mb-2 text-3xl font-black text-gray-900 dark:text-white">{{ t('cart.title') }}</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400">{{ t('cart.subtitle') }}</p>
+        <h1 class="mb-2 text-3xl font-black theme-text-primary">{{ t('cart.title') }}</h1>
+        <p class="text-sm theme-text-secondary">{{ t('cart.subtitle') }}</p>
       </div>
 
-      <div class="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur dark:border-white/10 dark:bg-[#111]/70">
+      <div class="mb-8 rounded-2xl border border-gray-200 theme-panel-soft p-4 backdrop-blur">
         <div class="grid grid-cols-3 gap-3">
           <div
             v-for="step in flowSteps"
             :key="step.key"
-            class="rounded-xl border px-3 py-2 text-center text-sm font-semibold transition-colors"
+            class="theme-step-chip"
             :class="step.active
-              ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-black'
-              : 'border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-black/20 dark:text-gray-400'"
+              ? 'theme-step-chip-active'
+              : 'theme-step-chip-inactive'"
           >
             {{ step.label }}
           </div>
@@ -23,12 +23,12 @@
 
       <div
         v-if="cartItems.length === 0"
-        class="rounded-2xl border border-gray-200 bg-white p-12 text-center dark:border-white/10 dark:bg-[#111]/80"
+        class="rounded-2xl border theme-panel p-12 text-center"
       >
-        <p class="mb-6 text-gray-500 dark:text-gray-400">{{ t('cart.empty') }}</p>
+        <p class="mb-6 theme-text-muted">{{ t('cart.empty') }}</p>
         <router-link
           to="/products"
-          class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+          class="theme-btn-inline-md theme-btn-primary gap-2 font-semibold transition-colors"
         >
           {{ t('cart.emptyAction') }}
         </router-link>
@@ -39,14 +39,14 @@
           <article
             v-for="item in cartItems"
             :key="item.productId"
-            class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-[#111]/80"
+            class="rounded-2xl border theme-panel p-5"
           >
             <div class="flex gap-5">
               <div
-                class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-white/10 dark:bg-white/5"
+                class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border theme-surface-muted"
               >
                 <img v-if="item.image" :src="item.image" class="h-full w-full object-cover" />
-                <div v-else class="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-600">
+                <div v-else class="flex h-full w-full items-center justify-center theme-text-muted">
                   <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
@@ -63,25 +63,25 @@
                   <div>
                     <router-link
                       :to="`/products/${item.slug}`"
-                      class="text-lg font-bold text-gray-900 transition-colors hover:text-purple-600 dark:text-white dark:hover:text-purple-400"
+                      class="text-lg font-bold theme-link"
                     >
                       {{ getLocalizedText(item.title) }}
                     </router-link>
-                    <p class="mt-1 text-sm text-gray-500">{{ t('cart.priceLabel') }}：{{ formatPrice(item.priceAmount, item.priceCurrency) }}</p>
+                    <p class="mt-1 text-sm theme-text-muted">{{ t('cart.priceLabel') }}：{{ formatPrice(item.priceAmount, item.priceCurrency) }}</p>
                     <div class="mt-3 flex flex-wrap gap-2">
                       <span
-                        class="rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
+                        class="theme-badge text-xs uppercase tracking-wider"
                         :class="item.purchaseType === 'guest'
-                          ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                          : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'"
+                          ? 'theme-badge-warning'
+                          : 'theme-badge-success'"
                       >
                         {{ item.purchaseType === 'guest' ? t('productPurchase.guest') : t('productPurchase.member') }}
                       </span>
                       <span
-                        class="rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
+                        class="theme-badge text-xs uppercase tracking-wider"
                         :class="item.fulfillmentType === 'auto'
-                          ? 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300'
-                          : 'border-slate-500/30 bg-slate-500/10 text-slate-700 dark:text-slate-300'"
+                          ? 'theme-badge-info'
+                          : 'theme-badge-neutral'"
                       >
                         {{ item.fulfillmentType === 'auto' ? t('products.fulfillmentType.auto') : t('products.fulfillmentType.manual') }}
                       </span>
@@ -89,7 +89,7 @@
                   </div>
                   <button
                     @click="cartStore.removeItem(item.productId)"
-                    class="text-sm text-gray-500 transition-colors hover:text-red-500"
+                    class="text-sm theme-link-muted transition-colors hover:text-red-500"
                   >
                     {{ t('cart.remove') }}
                   </button>
@@ -100,23 +100,23 @@
                     <button
                       @click="updateQty(item, item.quantity - 1)"
                       :disabled="item.quantity <= 1"
-                      class="h-8 w-8 rounded-lg border border-gray-200 bg-gray-100 text-gray-600 transition-colors hover:border-purple-500/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                      class="h-8 w-8 rounded-lg border theme-btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       -
                     </button>
-                    <span class="min-w-[32px] text-center text-sm font-mono text-gray-900 dark:text-white">{{ item.quantity }}</span>
+                    <span class="min-w-[32px] text-center text-sm font-mono theme-text-primary">{{ item.quantity }}</span>
                     <button
                       @click="updateQty(item, item.quantity + 1)"
                       :disabled="item.quantity >= 99"
-                      class="h-8 w-8 rounded-lg border border-gray-200 bg-gray-100 text-gray-600 transition-colors hover:border-purple-500/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                      class="h-8 w-8 rounded-lg border theme-btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       +
                     </button>
                   </div>
 
                   <div class="text-right">
-                    <p class="text-xs uppercase tracking-wider text-gray-500">{{ t('checkout.previewTotal') }}</p>
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ itemSubtotal(item) }}</p>
+                    <p class="text-xs uppercase tracking-wider theme-text-muted">{{ t('checkout.previewTotal') }}</p>
+                    <p class="text-sm font-semibold theme-text-primary">{{ itemSubtotal(item) }}</p>
                   </div>
                 </div>
               </div>
@@ -124,18 +124,18 @@
           </article>
         </div>
 
-        <div class="h-fit rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-24 dark:border-white/10 dark:bg-[#111]/80">
-          <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('cart.summaryTitle') }}</h2>
-          <div class="space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="h-fit rounded-2xl border theme-panel p-6 lg:sticky lg:top-24">
+          <h2 class="mb-4 text-lg font-bold theme-text-primary">{{ t('cart.summaryTitle') }}</h2>
+          <div class="space-y-3 text-sm theme-text-muted">
             <div class="flex items-center justify-between">
               <span>{{ t('cart.itemsCount') }}</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ totalItems }}</span>
+              <span class="font-mono theme-text-primary">{{ totalItems }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span>{{ t('cart.totalLabel') }}</span>
-              <span class="font-mono text-lg font-bold text-gray-900 dark:text-white">{{ formatPrice(totalAmount.toFixed(2), totalCurrency) }}</span>
+              <span class="font-mono text-lg font-bold theme-text-primary">{{ formatPrice(totalAmount.toFixed(2), totalCurrency) }}</span>
             </div>
-            <div class="rounded-lg border border-gray-100 bg-gray-50 p-3 text-xs text-gray-500 dark:border-white/10 dark:bg-black/20 dark:text-gray-400">
+            <div class="rounded-lg border theme-surface-soft p-3 text-xs theme-text-muted">
               {{ t('cart.disclaimer') }}
             </div>
           </div>
@@ -143,13 +143,13 @@
           <div class="mt-6 space-y-2">
             <router-link
               to="/checkout"
-              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-6 py-3 font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              class="theme-btn-block-md theme-btn-primary gap-2 font-semibold transition-colors"
             >
               {{ t('cart.checkout') }}
             </router-link>
             <router-link
               to="/products"
-              class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 px-6 py-3 font-semibold text-gray-600 transition-colors hover:border-gray-300 hover:text-gray-900 dark:border-white/10 dark:text-gray-300 dark:hover:border-white/30 dark:hover:text-white"
+              class="theme-btn-block-md border theme-btn-secondary gap-2 font-semibold transition-colors"
             >
               {{ t('cart.emptyAction') }}
             </router-link>
