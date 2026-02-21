@@ -978,7 +978,7 @@ const performPayment = async () => {
     error.value = t('payment.orderExpired')
     return
   }
-  if (cachedPayment.value && selectedChannelId.value && selectedChannelId.value === cachedPayment.value.channel_id) {
+  if (requiresOnlineChannel.value && cachedPayment.value && selectedChannelId.value && selectedChannelId.value === cachedPayment.value.channel_id) {
     paymentResult.value = cachedPayment.value
     openedPayWindow.value = false
     startPolling()
