@@ -363,7 +363,7 @@
             <div class="mt-1">{{ providerTypeLabel(selectedChannel.provider_type) }} / {{ channelTypeLabel(selectedChannel.channel_type) }}</div>
           </div>
           <div
-            v-else-if="!orderExpired && !orderCanceled"
+            v-else-if="requiresOnlineChannel && !orderExpired && !orderCanceled"
             class="mb-4 rounded-lg border p-3 text-xs theme-alert-warning"
           >
             {{ t('payment.selectChannelError') }}
@@ -604,13 +604,6 @@ const paymentAlert = computed<PageAlert | null>(() => {
   }
   return null
 })
-const canSubmitPayment = computed(() => {
-  if (submitting.value) return false
-  if (!selectedChannelId.value) return false
-  if (orderExpired.value || orderCanceled.value) return false
-  return true
-})
-
 const remainingMs = computed(() => {
   if (!expiresAtMs.value) return null
   return expiresAtMs.value - now.value
@@ -688,6 +681,17 @@ const expectedOnlinePayValue = computed(() => {
 })
 const expectedWalletPaidDisplay = computed(() => formatMoney(expectedWalletPaidValue.value.toFixed(2), order.value?.currency))
 const expectedOnlinePayDisplay = computed(() => formatMoney(expectedOnlinePayValue.value.toFixed(2), order.value?.currency))
+const requiresOnlineChannel = computed(() => {
+  if (isGuest.value) return true
+  if (!useBalance.value) return true
+  return expectedOnlinePayValue.value > 0
+})
+const canSubmitPayment = computed(() => {
+  if (submitting.value) return false
+  if (requiresOnlineChannel.value && !selectedChannelId.value) return false
+  if (orderExpired.value || orderCanceled.value) return false
+  return true
+})
 const paymentWalletPaidDisplay = computed(() => {
   if (paymentResult.value?.wallet_paid_amount === undefined || paymentResult.value?.wallet_paid_amount === null || paymentResult.value?.wallet_paid_amount === '') {
     return '-'
@@ -958,7 +962,11 @@ const syncEpayReturnIfNeeded = async () => {
 
 const performPayment = async () => {
   error.value = ''
-  if (!orderId.value || !selectedChannelId.value) {
+  if (!orderId.value) {
+    error.value = t('payment.orderNotFound')
+    return
+  }
+  if (requiresOnlineChannel.value && !selectedChannelId.value) {
     error.value = t('payment.selectChannelError')
     return
   }
@@ -970,7 +978,7 @@ const performPayment = async () => {
     error.value = t('payment.orderExpired')
     return
   }
-  if (cachedPayment.value && selectedChannelId.value === cachedPayment.value.channel_id) {
+  if (cachedPayment.value && selectedChannelId.value && selectedChannelId.value === cachedPayment.value.channel_id) {
     paymentResult.value = cachedPayment.value
     openedPayWindow.value = false
     startPolling()
@@ -998,11 +1006,14 @@ const performPayment = async () => {
       openedPayWindow.value = false
       startPolling()
     } else {
-      const response = await paymentAPI.create({
+      const payload: any = {
         order_id: orderId.value,
-        channel_id: selectedChannelId.value,
         use_balance: useBalance.value,
-      })
+      }
+      if (requiresOnlineChannel.value && selectedChannelId.value) {
+        payload.channel_id = selectedChannelId.value
+      }
+      const response = await paymentAPI.create(payload)
       const created = response.data.data || {}
       if (created.order_paid && !created.payment_id) {
         paymentResult.value = null

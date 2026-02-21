@@ -331,7 +331,7 @@ export interface WalletRechargeResult {
 
 export interface CreatePaymentPayload {
     order_id: number
-    channel_id: number
+    channel_id?: number
     use_balance?: boolean
 }
 
