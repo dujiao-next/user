@@ -104,10 +104,19 @@
                     >
                       -
                     </button>
-                    <span class="min-w-[32px] text-center text-sm font-mono theme-text-primary">{{ item.quantity }}</span>
+                    <input
+                      type="number"
+                      :id="`cart-qty-${item.productId}`"
+                      :name="`cart-qty-${item.productId}`"
+                      :value="item.quantity"
+                      @change="handleQtyChange(item, $event)"
+                      min="1"
+                      :max="getMaxLimit(item)"
+                      class="cart-qty-input w-12 text-center text-sm font-mono theme-text-primary bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
+                    />
                     <button
                       @click="updateQty(item, item.quantity + 1)"
-                      :disabled="item.quantity >= 99"
+                      :disabled="item.quantity >= getMaxLimit(item)"
                       class="h-8 w-8 rounded-lg border theme-btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       +
@@ -225,4 +234,37 @@ const itemSubtotal = (item: CartItem) => {
 const updateQty = (item: CartItem, qty: number) => {
   cartStore.updateQuantity(item.productId, qty)
 }
+
+const handleQtyChange = (item: CartItem, event: Event) => {
+  const target = event.target as HTMLInputElement
+  let val = parseInt(target.value, 10)
+  if (isNaN(val) || val < 1) val = 1
+
+  cartStore.updateQuantity(item.productId, val)
+  target.value = item.quantity.toString()
+}
+
+const getMaxLimit = (item: CartItem) => {
+  if (item.fulfillmentType === 'auto' && item.auto_stock_available !== undefined) {
+    return item.auto_stock_available
+  }
+  if (item.fulfillmentType === 'manual' && item.manual_stock_available !== undefined) {
+    if (item.manual_stock_available === 0) {
+      return 99999
+    }
+    return item.manual_stock_available
+  }
+  return 99999
+}
 </script>
+
+<style scoped>
+.cart-qty-input {
+  appearance: textfield;
+}
+.cart-qty-input::-webkit-outer-spin-button,
+.cart-qty-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+</style>

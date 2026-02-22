@@ -382,6 +382,8 @@ const addToCart = () => {
     fulfillmentType: product.value.fulfillment_type,
     manualFormSchema: product.value.manual_form_schema || {},
     quantity: 1,
+    auto_stock_available: product.value.auto_stock_available,
+    manual_stock_available: product.value.manual_stock_available,
   })
 }
 

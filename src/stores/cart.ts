@@ -11,6 +11,8 @@ export interface CartItem {
     purchaseType?: string
     fulfillmentType?: string
     manualFormSchema?: any
+    auto_stock_available?: number
+    manual_stock_available?: number
 }
 
 const loadCartItems = (): CartItem[] => {
@@ -36,10 +38,18 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     const addItem = (item: CartItem, quantity = 1) => {
-        const qty = Math.max(1, Math.min(quantity, 99))
+        let maxLimit = Number.MAX_SAFE_INTEGER
+        if (item.fulfillmentType === 'auto' && item.auto_stock_available !== undefined) {
+            maxLimit = item.auto_stock_available
+        } else if (item.fulfillmentType === 'manual' && item.manual_stock_available !== undefined) {
+            if (item.manual_stock_available > 0) {
+                maxLimit = item.manual_stock_available
+            }
+        }
+
         const existing = items.value.find((entry) => entry.productId === item.productId)
         if (existing) {
-            existing.quantity = Math.min(existing.quantity + qty, 99)
+            existing.quantity = Math.max(1, Math.min(existing.quantity + quantity, maxLimit))
             existing.slug = item.slug
             existing.title = item.title
             existing.priceAmount = item.priceAmount
@@ -47,7 +57,10 @@ export const useCartStore = defineStore('cart', () => {
             existing.purchaseType = item.purchaseType
             existing.fulfillmentType = item.fulfillmentType
             existing.manualFormSchema = item.manualFormSchema
+            existing.auto_stock_available = item.auto_stock_available
+            existing.manual_stock_available = item.manual_stock_available
         } else {
+            const qty = Math.max(1, Math.min(quantity, maxLimit))
             items.value.push({
                 ...item,
                 quantity: qty,
@@ -59,7 +72,17 @@ export const useCartStore = defineStore('cart', () => {
     const updateQuantity = (productId: number, quantity: number) => {
         const target = items.value.find((entry) => entry.productId === productId)
         if (!target) return
-        const qty = Math.max(1, Math.min(quantity, 99))
+
+        let maxLimit = Number.MAX_SAFE_INTEGER
+        if (target.fulfillmentType === 'auto' && target.auto_stock_available !== undefined) {
+            maxLimit = target.auto_stock_available
+        } else if (target.fulfillmentType === 'manual' && target.manual_stock_available !== undefined) {
+            if (target.manual_stock_available > 0) {
+                maxLimit = target.manual_stock_available
+            }
+        }
+
+        const qty = Math.max(1, Math.min(quantity, maxLimit))
         target.quantity = qty
         persist()
     }
