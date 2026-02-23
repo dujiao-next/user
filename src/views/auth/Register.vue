@@ -47,47 +47,49 @@
             />
           </div>
 
-          <div v-if="sendCodeCaptchaEnabled">
-            <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] theme-text-muted">
-              {{ t('auth.common.captchaLabel') }}
-            </label>
-            <ImageCaptcha
-              v-if="captchaProvider === 'image'"
-              ref="imageCaptchaRef"
-              v-model="captchaPayload"
-              :disabled="sending || countdown > 0"
-              @config-stale="handleCaptchaConfigStale"
-            />
-            <TurnstileCaptcha
-              v-else-if="captchaProvider === 'turnstile'"
-              ref="turnstileRef"
-              v-model="turnstileToken"
-              :site-key="turnstileSiteKey"
-            />
-          </div>
-
-          <div>
-            <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] theme-text-muted">
-              {{ t('auth.register.codeLabel') }}
-            </label>
-            <div class="flex flex-col gap-2 sm:flex-row">
-              <input
-                v-model="code"
-                type="text"
-                required
-                class="min-w-0 flex-1 form-input-lg"
-                :placeholder="t('auth.register.codePlaceholder')"
-              />
-              <button
-                type="button"
-                @click="handleSendCode"
+          <template v-if="appStore.requireEmailVerify">
+            <div v-if="sendCodeCaptchaEnabled">
+              <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] theme-text-muted">
+                {{ t('auth.common.captchaLabel') }}
+              </label>
+              <ImageCaptcha
+                v-if="captchaProvider === 'image'"
+                ref="imageCaptchaRef"
+                v-model="captchaPayload"
                 :disabled="sending || countdown > 0"
-                class="whitespace-nowrap rounded-xl border theme-btn-secondary px-4 py-3 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {{ countdown > 0 ? t('auth.common.countdown', { seconds: countdown }) : t('auth.common.sendCode') }}
-              </button>
+                @config-stale="handleCaptchaConfigStale"
+              />
+              <TurnstileCaptcha
+                v-else-if="captchaProvider === 'turnstile'"
+                ref="turnstileRef"
+                v-model="turnstileToken"
+                :site-key="turnstileSiteKey"
+              />
             </div>
-          </div>
+
+            <div>
+              <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] theme-text-muted">
+                {{ t('auth.register.codeLabel') }}
+              </label>
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <input
+                  v-model="code"
+                  type="text"
+                  required
+                  class="min-w-0 flex-1 form-input-lg"
+                  :placeholder="t('auth.register.codePlaceholder')"
+                />
+                <button
+                  type="button"
+                  @click="handleSendCode"
+                  :disabled="sending || countdown > 0"
+                  class="whitespace-nowrap rounded-xl border theme-btn-secondary px-4 py-3 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {{ countdown > 0 ? t('auth.common.countdown', { seconds: countdown }) : t('auth.common.sendCode') }}
+                </button>
+              </div>
+            </div>
+          </template>
 
           <label class="flex items-start gap-3 rounded-xl border theme-surface-soft px-4 py-3 text-sm theme-text-secondary transition-colors">
             <input
@@ -248,18 +250,22 @@ const performSendCode = async () => {
 
 const performRegister = async () => {
   error.value = ''
-  if (!email.value || !password.value || !code.value) return
+  if (!email.value || !password.value) return
+  if (appStore.requireEmailVerify && !code.value) return
   if (!agreed.value) {
     error.value = t('auth.register.errors.agreementRequired')
     return
   }
   try {
-    await userAuthStore.register({
+    const payload: any = {
       email: email.value,
       password: password.value,
-      code: code.value,
       agreement_accepted: agreed.value,
-    })
+    }
+    if (appStore.requireEmailVerify) {
+      payload.code = code.value
+    }
+    await userAuthStore.register(payload)
     router.push('/me/orders')
   } catch (err: any) {
     error.value = err.message || t('auth.register.errors.registerFailed')
@@ -271,5 +277,9 @@ const handleRegister = debounceAsync(performRegister, 200)
 
 onMounted(async () => {
   await appStore.loadConfig(true)
+  if (!appStore.userRegistration) {
+    router.push('/auth/login')
+    return
+  }
 })
 </script>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { configAPI } from '../api'
 import { applyCustomScripts } from '../utils/customScripts'
 import { useHead } from '@unhead/vue'
@@ -67,6 +67,9 @@ export const useAppStore = defineStore('app', () => {
         // 留空函数以防其他组件出错
     }
 
+    const userRegistration = computed(() => config.value?.user_registration?.enabled !== false)
+    const requireEmailVerify = computed(() => config.value?.user_registration?.require_email_verify !== false)
+
     // 加载全局配置
     const loadConfig = async (force = false) => {
         if (config.value && !force) {
@@ -93,6 +96,8 @@ export const useAppStore = defineStore('app', () => {
         loading,
         setLocale,
         loadConfig,
-        applySEO
+        applySEO,
+        userRegistration,
+        requireEmailVerify,
     }
 })

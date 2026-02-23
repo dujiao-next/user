@@ -115,7 +115,7 @@
         </form>
       </div>
 
-      <div class="mt-4 text-center">
+      <div v-if="appStore.userRegistration" class="mt-4 text-center">
         <router-link
           to="/auth/register"
           class="theme-link-muted text-sm"
