@@ -94,7 +94,7 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     const addItem = (item: CartItem, quantity = 1) => {
-        const qty = Math.max(1, Math.min(quantity, 99))
+        const qty = Math.max(1, Math.min(quantity, 9999))
         const normalizedItem: CartItem = {
             ...item,
             productId: Math.trunc(Number(item.productId)),
@@ -110,7 +110,7 @@ export const useCartStore = defineStore('cart', () => {
         const identity = cartIdentity(normalizedItem)
         const existing = items.value.find((entry) => cartIdentity(entry) === identity)
         if (existing) {
-            existing.quantity = Math.min(existing.quantity + qty, 99)
+            existing.quantity = Math.min(existing.quantity + qty, 9999)
             existing.slug = normalizedItem.slug
             existing.title = normalizedItem.title
             existing.priceAmount = normalizedItem.priceAmount
@@ -141,7 +141,7 @@ export const useCartStore = defineStore('cart', () => {
         const identity = `${Math.trunc(Number(productId))}:${normalizeSkuId(skuId)}`
         const target = items.value.find((entry) => cartIdentity(entry) === identity)
         if (!target) return
-        const qty = Math.max(1, Math.min(quantity, 99))
+        const qty = Math.max(1, Math.min(quantity, 9999))
         target.quantity = qty
         persist()
     }

@@ -140,7 +140,7 @@
                       @change="handleQtyChange(item, $event)"
                       min="1"
                       :max="itemMaxQuantity(item)"
-                      class="cart-qty-input w-12 text-center text-sm font-mono theme-text-primary bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
+                      class="cart-qty-input w-16 text-center text-sm font-mono theme-text-primary bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
                     />
                     <button
                       @click="updateQty(item, item.quantity + 1)"
@@ -332,8 +332,8 @@ const itemAvailableStock = (item: CartItem) => {
 
 const itemMaxQuantity = (item: CartItem) => {
   const available = itemAvailableStock(item)
-  if (available === null) return 99
-  return Math.max(Math.min(available, 99), 0)
+  if (available === null) return 9999
+  return Math.max(Math.min(available, 9999), 0)
 }
 
 const itemStockHint = (item: CartItem) => {

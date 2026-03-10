@@ -1052,8 +1052,8 @@ const itemAvailableStock = (item: CartItem) => {
 
 const itemMaxQuantity = (item: CartItem) => {
   const available = itemAvailableStock(item)
-  if (available === null) return 99
-  return Math.max(Math.min(available, 99), 0)
+  if (available === null) return 9999
+  return Math.max(Math.min(available, 9999), 0)
 }
 
 const itemStockExceeded = (item: CartItem) => {
