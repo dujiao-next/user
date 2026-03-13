@@ -23,6 +23,28 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 // const API_BASE_URL = 'http://localhost:8080' // Original backup
 const API_PREFIX = '/api/v1'
 
+// 服务器时间同步
+let serverTimeOffset = 0
+
+/**
+ * 获取同步后的服务器当前时间戳
+ */
+export const getServerTime = () => Date.now() - serverTimeOffset
+
+/**
+ * 根据响应头 Date 同步服务器时间
+ */
+export const syncServerTime = (headers?: any) => {
+    if (headers && headers.date) {
+        const serverTime = new Date(headers.date).getTime()
+        if (!Number.isNaN(serverTime)) {
+            // 计算偏差：客户端时间 - 服务器时间
+            // 之后校准时：服务器时间 = 客户端当前时间 - 偏差
+            serverTimeOffset = Date.now() - serverTime
+        }
+    }
+}
+
 const api = axios.create({
     baseURL: `${API_BASE_URL}${API_PREFIX}`,
     timeout: 10000,
@@ -53,6 +75,7 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
     (response) => {
+        syncServerTime(response.headers)
         const data: ApiResponse = response.data
 
         // 检查响应数据是否存在
@@ -156,6 +179,7 @@ const isAuthEndpoint = (url?: string) => {
 
 userApi.interceptors.response.use(
     (response) => {
+        syncServerTime(response.headers)
         const data: ApiResponse = response.data
 
         if (!data) {
