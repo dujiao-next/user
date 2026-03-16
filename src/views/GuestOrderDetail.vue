@@ -90,6 +90,11 @@
               <div class="theme-text-primary font-mono mt-1">{{ formatMoney(order.total_amount,
                 order.currency) }}</div>
             </div>
+            <div v-if="hasDiscountAmount(order.member_discount_amount)" class="border border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/30 rounded-xl p-4">
+              <div class="text-xs text-amber-700 dark:text-amber-400">{{ t('orderDetail.amountMemberDiscount') }}</div>
+              <div class="text-amber-700 dark:text-amber-400 font-mono mt-1">{{ formatMoney(order.member_discount_amount,
+                order.currency) }}</div>
+            </div>
           </div>
         </div>
 
@@ -174,6 +179,9 @@
                   {{ t('orderDetail.promotionDiscountLabel') }}：{{ formatMoney(item.promotion_discount_amount,
                   order.currency) }}
                 </div>
+                <div v-if="hasDiscountAmount(item.member_discount_amount)" class="text-amber-700 dark:text-amber-400">
+                  {{ t('orderDetail.memberDiscountLabel') }}：{{ formatMoney(item.member_discount_amount, order.currency) }}
+                </div>
               </div>
             </div>
           </div>
@@ -257,6 +265,10 @@
                       </div>
                       <div v-if="hasDiscountAmount(item.promotion_discount_amount)">
                         {{ t('orderDetail.promotionDiscountLabel') }}：{{ formatMoney(item.promotion_discount_amount,
+                        order.currency) }}
+                      </div>
+                      <div v-if="hasDiscountAmount(item.member_discount_amount)" class="text-amber-700 dark:text-amber-400">
+                        {{ t('orderDetail.memberDiscountLabel') }}：{{ formatMoney(item.member_discount_amount,
                         order.currency) }}
                       </div>
                     </div>
