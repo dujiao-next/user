@@ -15,6 +15,7 @@ const paymentViewLoader: RouteComponentLoader = () => import('../views/Payment.v
 const blogViewLoader: RouteComponentLoader = () => import('../views/Blog.vue')
 const noticeViewLoader: RouteComponentLoader = () => import('../views/Notice.vue')
 const loginViewLoader: RouteComponentLoader = () => import('../views/auth/Login.vue')
+const pluginsViewLoader: RouteComponentLoader = () => import('../views/Plugins.vue')
 
 const routeWarmupLoaders: RouteComponentLoader[] = [
     productsViewLoader,
@@ -25,6 +26,7 @@ const routeWarmupLoaders: RouteComponentLoader[] = [
     blogViewLoader,
     noticeViewLoader,
     loginViewLoader,
+    pluginsViewLoader,
 ]
 
 let hasScheduledRouteWarmup = false
@@ -251,6 +253,11 @@ const router = createRouter({
             path: '/about',
             name: 'about',
             component: () => import('../views/About.vue'),
+        },
+        {
+            path: '/plugins/:pluginId?',
+            name: 'plugins',
+            component: pluginsViewLoader,
         },
         {
             path: '/terms',
