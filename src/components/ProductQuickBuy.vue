@@ -232,8 +232,8 @@
                 <button
                   type="button"
                   class="w-9 h-9 flex items-center justify-center theme-text-secondary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
-                  :disabled="quantity <= 1"
-                  @click="quantity = Math.max(1, quantity - 1)"
+                  :disabled="quantity <= effectiveMin"
+                  @click="quantity = Math.max(effectiveMin, quantity - 1)"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" d="M20 12H4" />
@@ -261,7 +261,10 @@
             </div>
 
             <!-- Warning -->
-            <p v-if="purchaseWarning" class="mb-4 rounded-lg theme-alert-warning px-3 py-2 text-xs font-medium">
+            <p v-if="stockBelowMinPurchase" class="mb-4 rounded-lg theme-alert-warning px-3 py-2 text-xs font-medium">
+              {{ t('productDetail.stockBelowMinPurchase', { count: effectiveMin }) }}
+            </p>
+            <p v-else-if="purchaseWarning" class="mb-4 rounded-lg theme-alert-warning px-3 py-2 text-xs font-medium">
               {{ purchaseWarning }}
             </p>
           </div>
@@ -466,7 +469,7 @@ const syncSelectedSku = () => {
 watch(() => [props.product, props.visible], () => {
   if (props.visible && props.product) {
     purchaseWarning.value = ''
-    quantity.value = 1
+    quantity.value = effectiveMin.value
     syncSelectedSku()
   }
 }, { immediate: true })
@@ -501,9 +504,30 @@ const skuDisplayText = (sku: any) => buildSkuDisplayText({
   locale: appStore.locale,
 })
 
+const effectiveLimit = computed(() => {
+  const sku = selectedSku.value
+  const available = skuAvailableStock(sku)
+  const productLimit = normalizeOptionalLimitNumber(props.product?.max_purchase_quantity)
+  let limit: number | null = productLimit
+  if (available !== null) {
+    limit = limit === null ? available : Math.min(limit, available)
+  }
+  return limit
+})
+
+const effectiveMin = computed(() => {
+  const productMin = normalizeOptionalLimitNumber(props.product?.min_purchase_quantity)
+  return productMin && productMin > 0 ? productMin : 1
+})
+
 const purchaseType = computed(() => props.product?.purchase_type || 'member')
 const requiresLogin = computed(() => purchaseType.value === 'member' && !userAuthStore.isAuthenticated)
 const requiresSKUSelection = computed(() => activeSkus.value.length > 1 && !selectedSku.value)
+const stockBelowMinPurchase = computed(() => {
+  const limit = effectiveLimit.value
+  if (limit === null) return false
+  return limit < effectiveMin.value
+})
 const canPurchase = computed(() => {
   if (!props.product) return false
   if (activeSkus.value.length === 0) return false
@@ -511,6 +535,7 @@ const canPurchase = computed(() => {
   if (requiresSKUSelection.value) return false
   if (props.product.stock_status === 'out_of_stock') return false
   if (selectedSku.value && !isSkuPurchasable(selectedSku.value)) return false
+  if (stockBelowMinPurchase.value) return false
   return true
 })
 
@@ -523,23 +548,13 @@ const selectedCartQuantity = () => {
   return Number(matched?.quantity || 0)
 }
 
-const effectiveLimit = computed(() => {
-  const sku = selectedSku.value
-  const available = skuAvailableStock(sku)
-  const productLimit = normalizeOptionalLimitNumber(props.product?.max_purchase_quantity)
-  let limit: number | null = productLimit
-  if (available !== null) {
-    limit = limit === null ? available : Math.min(limit, available)
-  }
-  return limit
-})
-
 const handleQuantityInput = (event: Event) => {
   const input = event.target as HTMLInputElement
   const parsed = Math.floor(Number(input.value))
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    quantity.value = 1
-    input.value = '1'
+  const minimum = effectiveMin.value
+  if (!Number.isFinite(parsed) || parsed < minimum) {
+    quantity.value = minimum
+    input.value = String(minimum)
     return
   }
   const limit = effectiveLimit.value
@@ -599,6 +614,7 @@ const handleAddToCart = () => {
     title: props.product.title,
     priceAmount: String(sku?.price_amount || props.product.price_amount || '0.00'),
     image: images[0] || '',
+    minPurchaseQuantity: normalizeOptionalLimitNumber(props.product.min_purchase_quantity) ?? undefined,
     maxPurchaseQuantity: normalizeOptionalLimitNumber(props.product.max_purchase_quantity) ?? undefined,
     purchaseType: props.product.purchase_type,
     fulfillmentType: props.product.fulfillment_type,
@@ -645,6 +661,7 @@ const handleBuyNow = () => {
     title: props.product.title,
     priceAmount: String(sku?.price_amount || props.product.price_amount || '0.00'),
     image: images[0] || '',
+    minPurchaseQuantity: normalizeOptionalLimitNumber(props.product.min_purchase_quantity) ?? undefined,
     maxPurchaseQuantity: normalizeOptionalLimitNumber(props.product.max_purchase_quantity) ?? undefined,
     purchaseType: props.product.purchase_type,
     fulfillmentType: props.product.fulfillment_type,

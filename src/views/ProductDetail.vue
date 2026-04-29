@@ -255,8 +255,8 @@
                     <button
                       type="button"
                       class="w-10 h-10 flex items-center justify-center theme-text-secondary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-30"
-                      :disabled="quantity <= 1"
-                      @click="quantity = Math.max(1, quantity - 1)"
+                      :disabled="quantity <= quantityEffectiveMin"
+                      @click="quantity = Math.max(quantityEffectiveMin, quantity - 1)"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" d="M20 12H4" />
@@ -603,10 +603,16 @@ const quantityEffectiveLimit = computed(() => {
   return limit
 })
 
+const quantityEffectiveMin = computed(() => {
+  const productMin = normalizeOptionalLimitNumber(product.value?.min_purchase_quantity)
+  return productMin && productMin > 0 ? productMin : 1
+})
+
 const handleQuantityInput = (event: Event) => {
   const val = parseInt((event.target as HTMLInputElement).value, 10)
-  if (isNaN(val) || val < 1) {
-    quantity.value = 1
+  const minimum = quantityEffectiveMin.value
+  if (isNaN(val) || val < minimum) {
+    quantity.value = minimum
   } else if (quantityEffectiveLimit.value !== null && val > quantityEffectiveLimit.value) {
     quantity.value = quantityEffectiveLimit.value
   } else {
@@ -617,6 +623,11 @@ const handleQuantityInput = (event: Event) => {
 const purchaseType = computed(() => product.value?.purchase_type || 'member')
 const requiresLogin = computed(() => purchaseType.value === 'member' && !userAuthStore.isAuthenticated)
 const requiresSKUSelection = computed(() => activeSkus.value.length > 1 && !selectedSku.value)
+const stockBelowMinPurchase = computed(() => {
+  const limit = quantityEffectiveLimit.value
+  if (limit === null) return false
+  return limit < quantityEffectiveMin.value
+})
 const canPurchase = computed(() => {
   if (!product.value) return false
   if (activeSkus.value.length === 0) return false
@@ -624,12 +635,14 @@ const canPurchase = computed(() => {
   if (requiresSKUSelection.value) return false
   if (product.value.stock_status === 'out_of_stock') return false
   if (selectedSku.value && !isSkuPurchasable(selectedSku.value)) return false
+  if (stockBelowMinPurchase.value) return false
   return true
 })
 const cannotPurchaseReason = computed(() => {
   if (!product.value) return ''
   if (requiresLogin.value) return ''
   if (requiresSKUSelection.value) return t('productDetail.skuRequired')
+  if (stockBelowMinPurchase.value) return t('productDetail.stockBelowMinPurchase', { count: quantityEffectiveMin.value })
   if (canPurchase.value) return ''
   return t('productDetail.stockUnavailable')
 })
@@ -734,6 +747,7 @@ const addToCart = () => {
     title: product.value.title,
     priceAmount: String(sku?.price_amount || product.value.price_amount || '0.00'),
     image: images.value[0],
+    minPurchaseQuantity: normalizeOptionalLimitNumber(product.value.min_purchase_quantity) ?? undefined,
     maxPurchaseQuantity: normalizeOptionalLimitNumber(product.value.max_purchase_quantity) ?? undefined,
     purchaseType: product.value.purchase_type,
     fulfillmentType: product.value.fulfillment_type,
@@ -782,6 +796,7 @@ const buyNow = () => {
     title: product.value.title,
     priceAmount: String(sku?.price_amount || product.value.price_amount || '0.00'),
     image: images.value[0],
+    minPurchaseQuantity: normalizeOptionalLimitNumber(product.value.min_purchase_quantity) ?? undefined,
     maxPurchaseQuantity: normalizeOptionalLimitNumber(product.value.max_purchase_quantity) ?? undefined,
     purchaseType: product.value.purchase_type,
     fulfillmentType: product.value.fulfillment_type,
@@ -965,13 +980,19 @@ watch(
   () => selectedSkuId.value,
   () => {
     purchaseWarning.value = ''
-    quantity.value = 1
+    quantity.value = quantityEffectiveMin.value
   }
 )
 
+watch(quantityEffectiveMin, (minimum) => {
+  if (minimum > quantity.value) {
+    quantity.value = minimum
+  }
+})
+
 watch(quantityEffectiveLimit, (limit) => {
   if (limit !== null && quantity.value > limit) {
-    quantity.value = Math.max(1, limit)
+    quantity.value = Math.max(quantityEffectiveMin.value, limit)
   }
 })
 

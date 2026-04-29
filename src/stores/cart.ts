@@ -18,6 +18,7 @@ export interface CartItem {
     priceAmount: string
     image?: string
     quantity: number
+    minPurchaseQuantity?: number
     maxPurchaseQuantity?: number
     purchaseType?: string
     fulfillmentType?: string
@@ -63,8 +64,11 @@ const normalizeOptionalLimitNumber = (value: unknown): number | undefined => {
     return integerValue
 }
 
-const clampCartQuantity = (quantity: number, maxPurchaseQuantity?: number) => {
-    const normalizedQuantity = Math.max(1, Math.floor(Number(quantity) || 1))
+// 兜底将数量收敛到 [min, max] 区间，确保 store 内数据始终合法。
+// UI 层（ProductDetail / Cart 等）应在调用前根据 min/max 给用户提示，避免出现"数量被静默抬升"的体验。
+const clampCartQuantity = (quantity: number, maxPurchaseQuantity?: number, minPurchaseQuantity?: number) => {
+    const lowerBound = minPurchaseQuantity && minPurchaseQuantity > 0 ? minPurchaseQuantity : 1
+    const normalizedQuantity = Math.max(lowerBound, Math.floor(Number(quantity) || lowerBound))
     if (!maxPurchaseQuantity || maxPurchaseQuantity <= 0) {
         return normalizedQuantity
     }
@@ -94,6 +98,7 @@ const loadCartItems = (): CartItem[] => {
                     skuUpstreamStock: normalizeOptionalStockNumber(row.skuUpstreamStock ?? row.sku_upstream_stock, true),
                     skuStockEnforced: normalizeOptionalBoolean(row.skuStockEnforced ?? row.sku_stock_enforced),
                     skuStockSnapshotAt: normalizeOptionalString(row.skuStockSnapshotAt ?? row.sku_stock_snapshot_at),
+                    minPurchaseQuantity: normalizeOptionalLimitNumber(row.minPurchaseQuantity ?? row.min_purchase_quantity),
                     maxPurchaseQuantity: normalizeOptionalLimitNumber(row.maxPurchaseQuantity ?? row.max_purchase_quantity),
                 } as CartItem
             })
@@ -125,17 +130,19 @@ export const useCartStore = defineStore('cart', () => {
             skuUpstreamStock: normalizeOptionalStockNumber(item.skuUpstreamStock, true),
             skuStockEnforced: normalizeOptionalBoolean(item.skuStockEnforced),
             skuStockSnapshotAt: normalizeOptionalString(item.skuStockSnapshotAt) || new Date().toISOString(),
+            minPurchaseQuantity: normalizeOptionalLimitNumber(item.minPurchaseQuantity),
             maxPurchaseQuantity: normalizeOptionalLimitNumber(item.maxPurchaseQuantity),
         }
-        const qty = clampCartQuantity(quantity, normalizedItem.maxPurchaseQuantity)
+        const qty = clampCartQuantity(quantity, normalizedItem.maxPurchaseQuantity, normalizedItem.minPurchaseQuantity)
         const identity = cartIdentity(normalizedItem)
         const existing = items.value.find((entry) => cartIdentity(entry) === identity)
         if (existing) {
-            existing.quantity = clampCartQuantity(existing.quantity + qty, normalizedItem.maxPurchaseQuantity)
+            existing.quantity = clampCartQuantity(existing.quantity + qty, normalizedItem.maxPurchaseQuantity, normalizedItem.minPurchaseQuantity)
             existing.slug = normalizedItem.slug
             existing.title = normalizedItem.title
             existing.priceAmount = normalizedItem.priceAmount
             existing.image = normalizedItem.image
+            existing.minPurchaseQuantity = normalizedItem.minPurchaseQuantity
             existing.maxPurchaseQuantity = normalizedItem.maxPurchaseQuantity
             existing.purchaseType = normalizedItem.purchaseType
             existing.fulfillmentType = normalizedItem.fulfillmentType
@@ -163,7 +170,7 @@ export const useCartStore = defineStore('cart', () => {
         const identity = `${Math.trunc(Number(productId))}:${normalizeSkuId(skuId)}`
         const target = items.value.find((entry) => cartIdentity(entry) === identity)
         if (!target) return
-        const qty = clampCartQuantity(quantity, target.maxPurchaseQuantity)
+        const qty = clampCartQuantity(quantity, target.maxPurchaseQuantity, target.minPurchaseQuantity)
         target.quantity = qty
         persist()
     }
@@ -182,6 +189,7 @@ export const useCartStore = defineStore('cart', () => {
         target.skuUpstreamStock = normalizeOptionalStockNumber(target.skuUpstreamStock, true)
         target.skuStockEnforced = normalizeOptionalBoolean(target.skuStockEnforced)
         target.skuStockSnapshotAt = normalizeOptionalString(target.skuStockSnapshotAt)
+        target.minPurchaseQuantity = normalizeOptionalLimitNumber(target.minPurchaseQuantity)
         target.maxPurchaseQuantity = normalizeOptionalLimitNumber(target.maxPurchaseQuantity)
         persist()
     }

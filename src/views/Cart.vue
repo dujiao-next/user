@@ -81,7 +81,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="updateQty(item, item.quantity - 1)"
-                      :disabled="item.quantity <= 1"
+                      :disabled="item.quantity <= itemPurchaseMin(item)"
                       class="h-10 w-10 rounded-lg border theme-btn-secondary cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 flex items-center justify-center text-base font-medium"
                     >
                       -
@@ -92,7 +92,7 @@
                       :name="`cart-qty-${item.productId}`"
                       :value="item.quantity"
                       @change="handleQtyChange(item, $event)"
-                      min="1"
+                      :min="itemPurchaseMin(item)"
                       :max="itemMaxQuantity(item)"
                       class="cart-qty-input w-12 text-center text-sm font-mono theme-text-primary bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
                     />
@@ -161,7 +161,7 @@ import { useCartStore, type CartItem } from '../stores/cart'
 import { useAppStore } from '../stores/app'
 import { amountToCents, centsToAmount, parseInteger } from '../utils/money'
 import { buildSkuDisplayText, normalizeSkuId } from '../utils/sku'
-import { refreshCartStockSnapshots } from '../utils/cartStock'
+import { refreshCartStockSnapshots, cartItemPurchaseLimit as itemPurchaseLimit, cartItemPurchaseMin as itemPurchaseMin } from '../utils/cartStock'
 import { getImageUrl } from '../utils/image'
 import { useLocalized } from '../composables/useProduct'
 import { toast } from '../composables/useToast'
@@ -218,6 +218,13 @@ const updateQty = (item: CartItem, qty: number) => {
   const max = itemMaxQuantity(item)
   const available = itemAvailableStock(item)
   const purchaseLimit = itemPurchaseLimit(item)
+  const purchaseMin = itemPurchaseMin(item)
+  if (qty < purchaseMin) {
+    if (purchaseMin > 1) {
+      quantityWarnings.value[key] = t('cart.minPurchaseNotMet', { count: purchaseMin })
+    }
+    return
+  }
   if (qty > max) {
     if (max <= 0) {
       quantityWarnings.value[key] = t('cart.stockOut')
@@ -234,7 +241,8 @@ const updateQty = (item: CartItem, qty: number) => {
 const handleQtyChange = (item: CartItem, event: Event) => {
   const target = event.target as HTMLInputElement
   const value = parseInt(target.value, 10)
-  if (!Number.isFinite(value) || value < 1) {
+  const purchaseMin = itemPurchaseMin(item)
+  if (!Number.isFinite(value) || value < purchaseMin) {
     target.value = String(item.quantity)
     return
   }
@@ -271,14 +279,6 @@ const normalizeManualStockTotal = (value: unknown) => {
   return Math.max(integerValue, 0)
 }
 
-const normalizeOptionalLimitNumber = (value: unknown) => {
-  const numberValue = Number(value)
-  if (!Number.isFinite(numberValue)) return null
-  const integerValue = Math.floor(numberValue)
-  if (integerValue <= 0) return null
-  return integerValue
-}
-
 const hasItemStockSnapshot = (item: CartItem) => Boolean(String(item.skuStockSnapshotAt || '').trim())
 
 const shouldEnforceItemStock = (item: CartItem) => {
@@ -307,8 +307,6 @@ const itemAvailableStock = (item: CartItem) => {
   if (total === -1) return null
   return total
 }
-
-const itemPurchaseLimit = (item: CartItem) => normalizeOptionalLimitNumber(item.maxPurchaseQuantity)
 
 const itemMaxQuantity = (item: CartItem) => {
   const available = itemAvailableStock(item)

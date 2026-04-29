@@ -716,6 +716,7 @@ const messages = {
             stockRemaining: '该规格剩余 {count} 件',
             stockExceeded: '该规格库存不足，当前购物车最多 {count} 件',
             maxPurchaseExceeded: '该商品单次下单最多可购买 {count} 件',
+            minPurchaseNotMet: '该商品单次下单至少需购买 {count} 件',
         },
         checkout: {
             title: '订单结算',
@@ -1049,6 +1050,7 @@ const messages = {
             skuStockOut: '已售罄',
             skuStockRemaining: '剩余 {count} 件',
             stockUnavailable: '当前商品库存不足，暂不可购买',
+            stockBelowMinPurchase: '当前库存不足以满足该商品的最小购买数量（{count} 件）',
             addCartStockExceeded: '该规格库存不足，最多可购买 {count} 件',
             addCartStockExceededWithCart: '该规格库存不足，最多可购买 {count} 件（购物车中已有 {cartCount} 件）',
             addCartLimitExceeded: '当前商品单次最多可购买 {count} 件',
@@ -1252,6 +1254,7 @@ const messages = {
             skuStockOut: '已售罄',
             skuStockRemaining: '剩餘 {count} 件',
             stockUnavailable: '當前商品庫存不足，暫不可購買',
+            stockBelowMinPurchase: '目前庫存不足以滿足該商品的最小購買數量（{count} 件）',
             addCartStockExceeded: '該規格庫存不足，最多可購買 {count} 件',
             addCartStockExceededWithCart: '該規格庫存不足，最多可購買 {count} 件（購物車中已有 {cartCount} 件）',
             addCartLimitExceeded: '當前商品單次最多可購買 {count} 件',
@@ -1825,6 +1828,7 @@ const messages = {
             stockRemaining: '該規格剩餘 {count} 件',
             stockExceeded: '該規格庫存不足，目前購物車最多 {count} 件',
             maxPurchaseExceeded: '該商品單次下單最多可購買 {count} 件',
+            minPurchaseNotMet: '該商品單次下單至少需購買 {count} 件',
         },
         checkout: {
             title: '訂單結算',
@@ -2321,6 +2325,7 @@ const messages = {
             skuStockOut: 'Out of stock',
             skuStockRemaining: '{count} left',
             stockUnavailable: 'This product is currently out of stock and cannot be purchased',
+            stockBelowMinPurchase: 'Available stock is below the minimum purchase quantity ({count})',
             addCartStockExceeded: 'Insufficient stock for this SKU. You can purchase up to {count}',
             addCartStockExceededWithCart: 'Insufficient stock for this SKU. You can purchase up to {count} ({cartCount} already in cart)',
             addCartLimitExceeded: 'This product can be purchased up to {count} per order',
@@ -2894,6 +2899,7 @@ const messages = {
             stockRemaining: '{count} left for this SKU',
             stockExceeded: 'Insufficient stock for this SKU. Cart quantity can be up to {count}',
             maxPurchaseExceeded: 'This product can be purchased up to {count} per order',
+            minPurchaseNotMet: 'This product requires at least {count} per order',
         },
         checkout: {
             title: 'Checkout',

@@ -308,7 +308,7 @@ import { debounceAsync } from '../utils/debounce'
 import { pageAlertClass, type PageAlert } from '../utils/alerts'
 import { amountToCents, basisPointsToPercent, centsToAmount, parseInteger, rateToBasisPoints } from '../utils/money'
 import { buildSkuDisplayText, normalizeSkuId } from '../utils/sku'
-import { refreshCartStockSnapshots } from '../utils/cartStock'
+import { refreshCartStockSnapshots, cartItemPurchaseLimit as itemPurchaseLimit, cartItemPurchaseMin as itemPurchaseMin } from '../utils/cartStock'
 import { getImageUrl } from '../utils/image'
 import { getAffiliateCode, getAffiliateVisitorKey } from '../utils/affiliate'
 import ImageCaptcha from '../components/captcha/ImageCaptcha.vue'
@@ -846,6 +846,7 @@ const canSubmit = computed(() => {
   if (cartItems.value.length === 0) return false
   if (!manualFormValidation.value.valid) return false
   if (cartItems.value.some((item) => itemStockExceeded(item))) return false
+  if (cartItems.value.some((item) => itemMinNotMet(item))) return false
   if (walletOnlyPayment.value && expectedOnlinePayCents.value > 0) return false
   if (!walletOnlyPayment.value && requiresOnlineChannel.value && !selectedChannelId.value) return false
   if (requiresOnlineChannel.value && selectedChannelAmountHint.value) return false
@@ -871,6 +872,10 @@ const submitBlockedReason = computed(() => {
   const stockBlockedItem = cartItems.value.find((item) => itemStockExceeded(item))
   if (stockBlockedItem) {
     return itemStockHint(stockBlockedItem) || t('cart.stockOut')
+  }
+  const minBlockedItem = cartItems.value.find((item) => itemMinNotMet(item))
+  if (minBlockedItem) {
+    return t('cart.minPurchaseNotMet', { count: itemPurchaseMin(minBlockedItem) })
   }
   if (walletOnlyPayment.value && expectedOnlinePayCents.value > 0) return t('payment.walletInsufficientHint')
   if (!walletOnlyPayment.value && requiresOnlineChannel.value && !selectedChannelId.value) return t('checkout.errors.selectPayment')
@@ -994,6 +999,13 @@ const loadPreview = async () => {
     return
   }
   if (cartItems.value.some((item) => itemStockExceeded(item))) {
+    preview.value = null
+    orderPaymentChannels.value = []
+    previewError.value = ''
+    couponRefreshing.value = false
+    return
+  }
+  if (cartItems.value.some((item) => itemMinNotMet(item))) {
     preview.value = null
     orderPaymentChannels.value = []
     previewError.value = ''
@@ -1225,14 +1237,6 @@ const normalizeManualStockTotal = (value: unknown) => {
   return Math.max(integerValue, 0)
 }
 
-const normalizeOptionalLimitNumber = (value: unknown) => {
-  const numberValue = Number(value)
-  if (!Number.isFinite(numberValue)) return null
-  const integerValue = Math.floor(numberValue)
-  if (integerValue <= 0) return null
-  return integerValue
-}
-
 const hasItemStockSnapshot = (item: CartItem) => Boolean(String(item.skuStockSnapshotAt || '').trim())
 
 const shouldEnforceItemStock = (item: CartItem) => {
@@ -1262,8 +1266,6 @@ const itemAvailableStock = (item: CartItem) => {
   return total
 }
 
-const itemPurchaseLimit = (item: CartItem) => normalizeOptionalLimitNumber(item.maxPurchaseQuantity)
-
 const itemMaxQuantity = (item: CartItem) => {
   const available = itemAvailableStock(item)
   const purchaseLimit = itemPurchaseLimit(item)
@@ -1279,10 +1281,19 @@ const itemStockExceeded = (item: CartItem) => {
   return qty > itemMaxQuantity(item)
 }
 
+const itemMinNotMet = (item: CartItem) => {
+  const qty = parseInteger(item.quantity)
+  if (qty === null) return false
+  return qty < itemPurchaseMin(item)
+}
+
 const itemStockHint = (item: CartItem) => {
   const available = itemAvailableStock(item)
   const purchaseLimit = itemPurchaseLimit(item)
   const maxQuantity = itemMaxQuantity(item)
+  if (itemMinNotMet(item)) {
+    return t('cart.minPurchaseNotMet', { count: itemPurchaseMin(item) })
+  }
   if (available === null && purchaseLimit === null) return ''
   if (maxQuantity <= 0) return t('cart.stockOut')
   if (itemStockExceeded(item)) {

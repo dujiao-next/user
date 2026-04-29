@@ -31,6 +31,16 @@ const normalizeOptionalLimitNumber = (value: unknown) => {
   return integerValue
 }
 
+// cartItemPurchaseLimit 返回购物车项的单次最大购买上限（无限制时返回 null）。
+export const cartItemPurchaseLimit = (item: Pick<CartItem, 'maxPurchaseQuantity'>) =>
+  normalizeOptionalLimitNumber(item.maxPurchaseQuantity) ?? null
+
+// cartItemPurchaseMin 返回购物车项的单次最小购买下限（默认 1）。
+export const cartItemPurchaseMin = (item: Pick<CartItem, 'minPurchaseQuantity'>) => {
+  const minimum = normalizeOptionalLimitNumber(item.minPurchaseQuantity)
+  return minimum && minimum > 0 ? minimum : 1
+}
+
 const resolveActiveSkus = (product: any) => {
   const rows = Array.isArray(product?.skus) ? product.skus : []
   return rows.filter((sku: any) => Boolean(sku?.is_active))
@@ -124,6 +134,7 @@ export const refreshCartStockSnapshots = async (cartStore: CartStoreLike) => {
       skuUpstreamStock: upstreamStock,
       skuStockEnforced,
       skuStockSnapshotAt: new Date().toISOString(),
+      minPurchaseQuantity: normalizeOptionalLimitNumber(product?.min_purchase_quantity),
       maxPurchaseQuantity: normalizeOptionalLimitNumber(product?.max_purchase_quantity),
     })
   }
