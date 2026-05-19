@@ -158,8 +158,9 @@ export const openTelegramCompatibleLink = (url: string, options: { tryInstantVie
 
 export const isTelegramUrlEnvironment = (): boolean => {
   if (typeof window === 'undefined') return false
-  const hash = window.location.hash || ''
-  return hash.includes('tgWebAppData') || hash.includes('tgWebAppVersion') || hash.includes('tgWebAppPlatform')
+  // Telegram may append WebApp parameters to either the query string or hash.
+  const url = `${window.location.search || ''}${window.location.hash || ''}`
+  return url.includes('tgWebAppData') || url.includes('tgWebAppVersion') || url.includes('tgWebAppPlatform')
 }
 
 let scriptLoadPromise: Promise<void> | null = null

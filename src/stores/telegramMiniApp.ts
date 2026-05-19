@@ -91,7 +91,7 @@ export const useTelegramMiniAppStore = defineStore('telegram-mini-app', () => {
       }
     }
 
-    const snapshot = initializeTelegramWebApp()
+    let snapshot = initializeTelegramWebApp()
     isMiniApp.value = snapshot.isMiniApp
     isReady.value = snapshot.isReady
     initData.value = snapshot.initData
@@ -102,6 +102,25 @@ export const useTelegramMiniAppStore = defineStore('telegram-mini-app', () => {
     viewportHeight.value = snapshot.viewportHeight
     viewportStableHeight.value = snapshot.viewportStableHeight
     themeParams.value = snapshot.themeParams
+
+    // Some Telegram clients expose initData slightly later after the SDK is ready.
+    if (isTelegramUrlEnvironment() && snapshot.initData === '') {
+      const deadline = Date.now() + 1500
+      while (Date.now() < deadline && initData.value === '') {
+        await new Promise((resolve) => window.setTimeout(resolve, 100))
+        snapshot = readTelegramMiniAppSnapshot()
+        isMiniApp.value = snapshot.isMiniApp
+        isReady.value = snapshot.isReady
+        initData.value = snapshot.initData
+        initDataUnsafe.value = snapshot.initDataUnsafe
+        platform.value = snapshot.platform
+        version.value = snapshot.version
+        colorScheme.value = snapshot.colorScheme
+        viewportHeight.value = snapshot.viewportHeight
+        viewportStableHeight.value = snapshot.viewportStableHeight
+        themeParams.value = snapshot.themeParams
+      }
+    }
 
     const webApp = getTelegramWebApp()
     if (!webApp || !snapshot.isMiniApp) {
