@@ -565,7 +565,7 @@ const readRouteQueryFlag = (key: string): boolean => {
   return value === '1' || value === 'true' || value === 'yes'
 }
 
-const paymentReturnMarkers = ['epay_return', 'alipay_return', 'wechat_return', 'epusdt_return', 'tokenpay_return', 'okpay_return', 'pp_return', 'stripe_return']
+const paymentReturnMarkers = ['epay_return', 'alipay_return', 'wechat_return', 'epusdt_return', 'bepusdt_return', 'tokenpay_return', 'okpay_return', 'pp_return', 'stripe_return']
 const rechargeBizType = computed(() => readRouteQueryValue('biz_type').toLowerCase())
 const rechargeNoQuery = computed(() => {
   const rechargeNo = readRouteQueryValue('recharge_no')
@@ -1050,27 +1050,30 @@ const loadOrder = async (options?: { silent?: boolean }) => {
       }
     }
   } finally {
-    if (!silent) {
-      loading.value = false
-    }
-    if (order.value) {
-      if (orderCanceled.value) {
-        if (!silent) {
-          error.value = t('payment.orderCanceled')
+    try {
+      if (order.value) {
+        if (orderCanceled.value) {
+          if (!silent) {
+            error.value = t('payment.orderCanceled')
+          }
+          cachedPayment.value = null
+          return
         }
-        cachedPayment.value = null
-        return
-      }
-      if (orderExpired.value) {
-        if (!silent) {
-          error.value = t('payment.orderExpired')
+        if (orderExpired.value) {
+          if (!silent) {
+            error.value = t('payment.orderExpired')
+          }
+          cachedPayment.value = null
+          return
         }
-        cachedPayment.value = null
-        return
+        if (!paymentResult.value && !latestLoaded.value && order.value.status === 'pending_payment') {
+          latestLoaded.value = true
+          await loadLatestPayment()
+        }
       }
-      if (!paymentResult.value && !latestLoaded.value && order.value.status === 'pending_payment') {
-        latestLoaded.value = true
-        await loadLatestPayment()
+    } finally {
+      if (!silent) {
+        loading.value = false
       }
     }
   }
